@@ -1,24 +1,10 @@
-#include <iostream>
-#include <string>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <cstring>
-#include <thread>
-#include <map>
-#include <fstream>
-#include <mutex>
-#include <vector>
-#include <algorithm>
+#include "Server.h"
 
-using namespace std;
+// using namespace std;
 
-const int PORT = 4444;
-const int BUFFER_SIZE = 1024;
-const int MAX_CLIENTS = 10;
+// const int PORT = 4444;
+// const int BUFFER_SIZE = 1024;
+// const int MAX_CLIENTS = 10;
 
 class UserAuthentication
 {
@@ -96,6 +82,17 @@ public:
         return false;
     }
 };
+
+UserAuthentication::UserAuthentication() : username(""), password("") {}
+
+
+
+
+
+
+
+
+
 
 class Client
 {
