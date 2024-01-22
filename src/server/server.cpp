@@ -73,31 +73,31 @@ const string& Client::getRoomName() const {
     return roomName;
 }
 
-Server::Server() {
-    // ... (constructor implementation)
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSocket == -1) {
-        cerr << "Can't create the socket" << endl;
-        return;
-    }
+// Server::Server() {
+//     // ... (constructor implementation)
+//     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+//     if (serverSocket == -1) {
+//         cerr << "Can't create the socket" << endl;
+//         return;
+//     }
 
-    sockaddr_in hint;
-    hint.sin_family = AF_INET;
-    hint.sin_port = htons(54000);
-    hint.sin_addr.s_addr = INADDR_ANY;
+//     sockaddr_in hint;
+//     hint.sin_family = AF_INET;
+//     hint.sin_port = htons(54000);
+//     hint.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(serverSocket, (sockaddr*)&hint, sizeof(hint)) == -1) {
-        cerr << "Bind failed!" << endl;
-        close(serverSocket);
-        return;
-    }
+//     if (bind(serverSocket, (sockaddr*)&hint, sizeof(hint)) == -1) {
+//         cerr << "Bind failed!" << endl;
+//         close(serverSocket);
+//         return;
+//     }
 
-    if (listen(serverSocket, SOMAXCONN) == -1) {
-        cerr << "Listen failed!" << endl;
-        close(serverSocket);
-        return;
-    }
-}
+//     if (listen(serverSocket, SOMAXCONN) == -1) {
+//         cerr << "Listen failed!" << endl;
+//         close(serverSocket);
+//         return;
+//     }
+// }
 
 Client* Server::findClientByName(const string& name) {
     // ... (findClientByName implementation)
@@ -185,16 +185,25 @@ bool Server::handleLogin(int clientSocket)
     return status;
 }
 
-string Server::handleAuthentication(int clientSocket)
+void Server::handleAuthentication(int clientSocket, int option)
     {
         bool check = false;
+        cout << option << endl;
         string username;
         while(!check)
-        {
+        {   
+            
             cout << "Need to sign in or sign up" << endl;
             char buffer[4096];
-            int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
-            int option = stoi(string(buffer, 0, bytesReceived));
+            // int option;
+            // try {
+            //     option = stoi(string(buffer, 0, bytesReceived));
+            // } catch (const std::invalid_argument& e) {
+            //     cerr << "Invalid option received: " << e.what() << endl;
+            //     // Handle the error, possibly by sending an error message to the client
+            //     // and asking for input again.
+            //     continue; // Skip the rest of the loop and go back to the beginning.
+            // }
 
             if (option == 1)
             {
@@ -208,34 +217,15 @@ string Server::handleAuthentication(int clientSocket)
                 cout<<"Login"<<endl;
                 check = handleLogin(clientSocket);
                 if (check) {
-                    bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+                    int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
                     username = string(buffer, 0, bytesReceived); // Store the username
                 }
             }
         }
-        return username;
-    }
-
-
-void Server::start() {
-    // ... (start implementation)
-    while (true) {
-        sockaddr_in clientAddr;
-        socklen_t clientSize = sizeof(clientAddr);
-        int clientSocket = accept(serverSocket, (sockaddr*)&clientAddr, &clientSize);
-        if (clientSocket == -1) {
-            cerr << "Error when create the socket from client" << endl;
-            continue;
-        }
-
-        // handleAuthentication(clientSocket);   
-        string username = handleAuthentication(clientSocket); // Get the username
-
-        // Receive room name from client
         string roomName = receiveString(clientSocket);
         if (roomName.empty()) {
             close(clientSocket);
-            continue;
+            // continue;
         }
 
         // Receive client name from client
@@ -252,6 +242,135 @@ void Server::start() {
         // thread clientThread(&Server::handleClient, this, clientSocket, clientName, roomName);
         thread clientThread(&Server::handleClient, this, clientSocket, username, roomName); // Pass the username
         clientThread.detach();
+    }
+
+Server::Server(){}
+
+void Server::start(int port) {
+    // ... (start implementation)
+    // while (true) {
+    //     sockaddr_in clientAddr;
+    //     socklen_t clientSize = sizeof(clientAddr);
+    //     int clientSocket = accept(serverSocket, (sockaddr*)&clientAddr, &clientSize);
+    //     if (clientSocket == -1) {
+    //         cerr << "Error when create the socket from client" << endl;
+    //         continue;
+    //     }
+
+    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (serverSocket == -1)
+    {
+        cerr << "Unable to create socket! Cancel..." << endl;
+        // return false;
+        return;
+    }
+
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_port = htons(port);
+    inet_pton(AF_INET, "0.0.0.0", &serverAddr.sin_addr);
+
+    if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1)
+    {
+        cerr << "Unable to bind socket." << endl;
+        close(serverSocket);
+        // return false;
+        return;
+    }
+
+    // Listen for connections
+    if (listen(serverSocket, MAX_CLIENTS) == -1)
+    {
+        cerr << "Error while listening for connection." << endl;
+        close(serverSocket);
+        // return false;
+        return;
+    }
+
+    cout << "Waiting for connection from client..." << endl;
+
+    while (true)
+    {
+        FD_ZERO(&readfds);
+        FD_SET(serverSocket, &readfds);
+        maxSocket = serverSocket;
+
+        for (const int &clientSocket : clientSockets)
+        {
+            FD_SET(clientSocket, &readfds);
+            if (clientSocket > maxSocket)
+            {
+                maxSocket = clientSocket;
+            }
+        }
+
+        // Use select to wait for events on sockets
+        int activity = select(maxSocket + 1, &readfds, nullptr, nullptr, nullptr);
+
+        if (activity < 0)
+        {
+            cerr << "Error when using select." << endl;
+            break;
+        }
+
+        // New connection
+        if (FD_ISSET(serverSocket, &readfds))
+        {
+            sockaddr_in clientAddr;
+            socklen_t clientAddrLen = sizeof(clientAddr);
+            int newClientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientAddrLen);
+
+            if (newClientSocket < 0)
+            {
+                cerr << "Error accepting connection." << endl;
+            }
+            else
+            {
+                cout << "Connected to the client." << endl;
+                clientSockets.push_back(newClientSocket);
+            }
+        }
+        
+        for (auto it = clientSockets.begin(); it != clientSockets.end();)
+        {
+            cout <<"abc"<<endl;
+            int clientSocket = *it;
+
+            if (FD_ISSET(clientSocket, &readfds))
+            {
+                char buffer[BUFFER_SIZE];
+                memset(buffer, 0, sizeof(buffer));
+                int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+                cout << "----------" << bytesReceived << endl;
+                if (bytesReceived <= 0)
+                {
+                    cerr << "Connection closed." << endl;
+                    close(clientSocket);
+                    it = clientSockets.erase(it);
+                }
+                else
+                {
+                    thread processThread(&Server::handleAuthentication, this, clientSocket, bytesReceived);
+                    cout <<"dô luồng" << endl;
+                    processThread.detach();
+                    // cout << "Client " << clientSocket << ": " << buffer << endl;
+
+                    // // Send data to client
+                    // cout << "Server: ";
+                    // cin.getline(buffer, sizeof(buffer));
+                    // send(clientSocket, buffer, strlen(buffer), 0);
+                    // handleAuthentication(clientSocket);   
+                    // handleAuthentication(clientSocket, bytesReceived); // Get the username
+                    // Receive room name from client
+                    
+                    ++it;
+                }
+            }
+            else
+            {
+                ++it;
+            }
+        }
     }
 }
 

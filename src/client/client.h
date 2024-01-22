@@ -7,11 +7,17 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <fstream>
-#include <chrono>
-#include <ctime>
+#include <algorithm>
+#include <cctype>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+
 
 using namespace std;
+
+const int PORT = 4444;
+const string IP_SERVER = "10.188.9.20";
 
 class Client {
 private:

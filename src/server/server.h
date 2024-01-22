@@ -13,8 +13,15 @@
 #include <cctype>
 #include <chrono>
 #include <fstream>
+#include <map>
+#include <netdb.h>
+#include <arpa/inet.h>
 
 using namespace std;
+
+const int PORT = 4444;
+const int BUFFER_SIZE = 1024;
+const int MAX_CLIENTS = 10;
 
 class UserAuthentication
 {
@@ -56,21 +63,27 @@ public:
 
     void handlePrivateMessage(const string& senderName, const string& receiverName, const string& message);
 
-    void start();
+    void start(int port);
 
 private:
     int serverSocket;
+    int clientSocket;
+    int maxSocket;
+    sockaddr_in serverAddr;
     vector<Client> clients;
     mutex clientsMutex;
     UserAuthentication auth;
+    vector<int> clientSockets;
+    fd_set readfds;
 
     bool handleRegistration(int clientSocket);
     bool handleLogin(int clientSocket);
+    void handleAuthentication(int clientSocket, int option);
 
     string trim(const string& str);
     string receiveString(int clientSocket);
     void handleClient(int clientSocket, const string& clientName, const string& roomName);
-    string handleAuthentication(int clientSocket);
+
 };
 
 #endif // SERVER_H

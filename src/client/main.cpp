@@ -4,7 +4,7 @@ int main()
 {
     Client client;
 
-    if (client.connectToServer("10.188.9.20", 54000)) {
+    if (client.connectToServer(IP_SERVER, PORT)) {
         /// void login (){goto :abc}
         //abc:
         client.handleUserInteraction();
