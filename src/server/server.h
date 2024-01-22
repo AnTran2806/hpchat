@@ -15,50 +15,66 @@
 #include <fstream>
 using namespace std;
 
+using namespace std;
+
+using namespace std;
+
+class UserAuthentication
+{
+private:
+    string username;
+    string password;
+
+public:
+    UserAuthentication();
+
+    bool isUserRegistered(const string &checkUsername);
+
+    bool registerUser(const string &enteredUsername, const string &enteredPassword);
+
+    bool isLoggedIn(const string &enteredUsername, const string &enteredPassword);
+};
+
 class Client {
 public:
-    Client(int socket, const std::string& name, const std::string& roomName);
+    Client(int socket, const string& name, const string& roomName);
+
     int getSocket() const;
-    const std::string& getName() const;
-    const std::string& getRoomName() const;
+
+    const string& getName() const;
+
+    const string& getRoomName() const;
 
 private:
     int socket;
-    std::string name;
-    std::string roomName;
+    string name;
+    string roomName;
 };
 
 class Server {
 public:
     Server();
 
-    Client* findClientByName(const std::string& name);
-    void sendPrivateMessage(const std::string& senderName, 
-                            const std::string& receiverName, 
-                            const std::string& message);
-    void initiateServer();
-    std::string trim(const std::string &str);
-    std::string receiveString(int clientSocket);
-    void handlePrivateMessage(int clientSocket, 
-                              const std::string& clientName, 
-                              const std::string& roomName,
-                              std::string receivedMessage);
-    void handleServerChat(int clientSocket, const std::string& clientName);
-    void handleFileTransfer(int clientSocket, const std::string& clientName);
-    void handleGroupMessage(const std::string& clientName, 
-                            const std::string& roomName, 
-                            const std::string& receivedMessage,
-                            int clientSocket);
-    void handleClientOffline(int clientSocket, const std::string& clientName);
+    Client* findClientByName(const string& name);
+
+    void handlePrivateMessage(const string& senderName, const string& receiverName, const string& message);
+
+    void start();
 
 private:
     int serverSocket;
-    std::vector<Client> clients;
-    std::mutex clientsMutex;
+    vector<Client> clients;
+    mutex clientsMutex;
+    UserAuthentication auth;
 
-    void handleClient(int clientSocket, 
-                      const std::string& clientName, 
-                      const std::string& roomName);
+    bool handleRegistration(int clientSocket);
+    bool handleLogin(int clientSocket);
+
+    string trim(const string& str);
+    string receiveString(int clientSocket);
+    void handleClient(int clientSocket, const string& clientName, const string& roomName);
+    void handleClient(int clientSocket, const string& clientName, const string& roomName);
+    string handleAuthentication(int clientSocket);
 };
 
 #endif // SERVER_H

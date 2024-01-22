@@ -3,25 +3,32 @@
 int main()
 {
     Client client;
-    if (client.connectToServer("10.188.9.27", 8081))
-    {
-        std::string roomName;
-        std::cout << "Enter the Room: ";
-        std::getline(std::cin, roomName);
+
+    if (client.connectToServer("10.188.9.19", 54000)) {
+        /// void login (){goto :abc}
+        //abc:
+        string roomName;
+        cout << "Enter the ID or RoomName: ";
+        getline(cin, roomName);
         client.sendToServer(roomName);
 
-        std::string clientName;
-        std::cout << "Enter Your name: ";
-        std::getline(std::cin, clientName);
-        client.sendToServer(clientName);
+        client.startReceiving();
+
+        // string clientName;
+        // cout << "Enter Your name: ";
+        // getline(cin, clientName);
+
+        // // Sử dụng hàm trim thông qua đối tượng client
+        // clientName = client.trim(clientName);
+
+        // client.sendToServer(clientName);
 
         std::cout << "Enter 'help' to get the guide\n";
         client.startReceiving();
         // Main loop to input and send messages from the user
         while (true) {
-            std::string userInput;
-            std::cout << "You: ";
-            std::getline(std::cin, userInput);
+            string userInput;
+            getline(cin, userInput);
 
             if (userInput == "sendfile")
             {

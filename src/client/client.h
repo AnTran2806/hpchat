@@ -11,25 +11,28 @@
 #include <chrono>
 #include <ctime>
 
+using namespace std;
+
 class Client {
 private:
     int sock;
-    std::thread receivingThread;
-    std::string clientName;
-    std::string roomName;
+    thread receivingThread;
+
     
 public:
     Client();
     ~Client();
+    
+    bool connectToServer(const string& ipAddress, int port);
 
     void startReceiving();
     void receiveFile();
 
-    std::string trim(const std::string& str);
-    bool connectToServer(const std::string& ipAddress, int port);
-    void runMessageReceiver();
-    void sendToServer(const std::string& message);
-    void sendFile(const std::string& filePath);
+    void sendToServer(const string& message);
+
+    void handleUserInteraction();
+
+    string trim(const string& str);
 };
 
 #endif // CLIENT_H
