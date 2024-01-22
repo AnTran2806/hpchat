@@ -13,9 +13,6 @@
 #include <cctype>
 #include <chrono>
 #include <fstream>
-using namespace std;
-
-using namespace std;
 
 using namespace std;
 
@@ -72,7 +69,6 @@ private:
 
     string trim(const string& str);
     string receiveString(int clientSocket);
-    void handleClient(int clientSocket, const string& clientName, const string& roomName);
     void handleClient(int clientSocket, const string& clientName, const string& roomName);
     string handleAuthentication(int clientSocket);
 };

@@ -4,9 +4,10 @@ int main()
 {
     Client client;
 
-    if (client.connectToServer("10.188.9.19", 54000)) {
+    if (client.connectToServer("10.188.9.20", 54000)) {
         /// void login (){goto :abc}
         //abc:
+        client.handleUserInteraction();
         string roomName;
         cout << "Enter the ID or RoomName: ";
         getline(cin, roomName);
