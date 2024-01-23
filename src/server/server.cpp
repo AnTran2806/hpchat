@@ -175,7 +175,7 @@ bool Server::handleLogin(int clientSocket)
     char passwordBuffer[1024] = {0};
 
     read(clientSocket, usernameBuffer, 1024);
-    cout << "Enter the username: " << endl;
+    cout << "Here is handleLogin Fucntion" << endl;
     read(clientSocket, passwordBuffer, 1024);
 
     string username(usernameBuffer);
@@ -183,6 +183,20 @@ bool Server::handleLogin(int clientSocket)
     bool status = auth.isLoggedIn(username, password);
     const char *response = status ? "Login successful." : "Login failed.";
     send(clientSocket, response, strlen(response), 0);  
+    
+    // Get and print the client's IP address
+    sockaddr_in clientAddr;
+    socklen_t addrLen = sizeof(clientAddr);
+    getpeername(clientSocket, (struct sockaddr*)&clientAddr, &addrLen);
+
+    char clientIP[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
+
+    cout << "Login successful at IP address ";
+    printColoredIP(clientIP);
+    cout << " with the username is " << username;
+    cout << endl;
+
     return status;
 }
 
