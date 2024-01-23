@@ -97,7 +97,7 @@ const string& Client::getRoomName() const {
 //         close(serverSocket);
 //         return;
 //     }
-// }
+// } 
 
 Client* Server::findClientByName(const string& name) {
     // ... (findClientByName implementation)
@@ -175,25 +175,23 @@ bool Server::handleLogin(int clientSocket)
     char passwordBuffer[1024] = {0};
 
     read(clientSocket, usernameBuffer, 1024);
+    cout << "Enter the username: " << endl;
     read(clientSocket, passwordBuffer, 1024);
 
     string username(usernameBuffer);
     string password(passwordBuffer);
     bool status = auth.isLoggedIn(username, password);
     const char *response = status ? "Login successful." : "Login failed.";
-    send(clientSocket, response, strlen(response), 0);
+    send(clientSocket, response, strlen(response), 0);  
     return status;
 }
 
 void Server::handleAuthentication(int clientSocket, int option)
     {
         bool check = false;
-        cout << option << endl;
         string username;
         while(!check)
         {   
-            
-            cout << "Need to sign in or sign up" << endl;
             char buffer[4096];
             // int option;
             // try {
@@ -208,13 +206,13 @@ void Server::handleAuthentication(int clientSocket, int option)
             if (option == 1)
             {
                 // Register
-                cout<<"Registration"<<endl;
+                cout<<"Client is registering."<<endl;
                 check = handleRegistration(clientSocket);
             }
             else if (option == 2)
             {
                 // Login
-                cout<<"Login"<<endl;
+                cout<<"Client has logged in."<<endl;
                 check = handleLogin(clientSocket);
                 if (check) {
                     int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
@@ -244,6 +242,10 @@ void Server::handleAuthentication(int clientSocket, int option)
         clientThread.detach();
     }
 
+void Server::printColoredIP(const char* ipAddress) {
+    cout << "\033[1;32m" << ipAddress << "\033[0m"; // Set color to green
+}  
+
 Server::Server(){}
 
 void Server::start(int port) {
@@ -264,6 +266,11 @@ void Server::start(int port) {
         // return false;
         return;
     }
+
+    // Set socket as reusable
+    int reuse = 1;
+    setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+
 
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(port);
@@ -325,23 +332,29 @@ void Server::start(int port) {
             }
             else
             {
-                cout << "Connected to the client." << endl;
+                // cout << "Connected to the client." << endl;
+                // clientSockets.push_back(newClientSocket);
+                char clientIP[INET_ADDRSTRLEN];
+                inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
+
+                cout << "Connected to the client with IP: ";
+                printColoredIP(clientIP);
+                cout << endl;
+
                 clientSockets.push_back(newClientSocket);
             }
         }
         
         for (auto it = clientSockets.begin(); it != clientSockets.end();)
         {
-            cout <<"abc"<<endl;
             int clientSocket = *it;
 
             if (FD_ISSET(clientSocket, &readfds))
             {
                 char buffer[BUFFER_SIZE];
                 memset(buffer, 0, sizeof(buffer));
-                int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+                int bytesReceived = recv(clientSocket, buffer, 4096, 0);
 
-                cout << "----------" << bytesReceived << endl;
                 if (bytesReceived <= 0)
                 {
                     cerr << "Connection closed." << endl;
@@ -350,8 +363,18 @@ void Server::start(int port) {
                 }
                 else
                 {
-                    thread processThread(&Server::handleAuthentication, this, clientSocket, bytesReceived);
-                    cout <<"dô luồng" << endl;
+                    int option;
+                    try {
+                        option = stoi(string(buffer, 0, bytesReceived));
+                    } catch (const invalid_argument& e) {
+                        cerr << "Invalid option received: " << e.what() << endl;
+                        // Handle the error, possibly by sending an error message to the client
+                        // and asking for input again.
+                        continue; // Skip the rest of the loop and go back to the beginning.
+                    }
+                    
+                    cout << "dô luồng" << endl;
+                    thread processThread(&Server::handleAuthentication, this, clientSocket, option);
                     processThread.detach();
                     // cout << "Client " << clientSocket << ": " << buffer << endl;
 
@@ -494,7 +517,7 @@ void Server::handleClient(int clientSocket, const string& clientName, const stri
 
                         
                     string userInput;
-                     bool exitChat = false;
+                    bool exitChat = false;
                     // bool exitChatRequested = false;
 
                         while (!exitChat) {

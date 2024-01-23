@@ -16,6 +16,7 @@
 #include <map>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <sys/select.h>
 
 using namespace std;
 
@@ -63,6 +64,8 @@ public:
 
     void handlePrivateMessage(const string& senderName, const string& receiverName, const string& message);
 
+    void printColoredIP(const char* ipAddress);
+
     void start(int port);
 
 private:
@@ -83,6 +86,7 @@ private:
     string trim(const string& str);
     string receiveString(int clientSocket);
     void handleClient(int clientSocket, const string& clientName, const string& roomName);
+
 
 };
 

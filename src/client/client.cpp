@@ -51,11 +51,14 @@ void Client::sendToServer(const string& message) {
 
 void Client::handleUserInteraction() {
     int option;
+    // cout << "Press Enter to continue" << endl;
+    // cin.get();
     cout << "1: Register" << endl << "2: Login" << endl << "Your Choice: ";
     cin >> option;
     cin.ignore();
 
-    send(sock, to_string(option).c_str(), to_string(option).size() + 1, 0);
+    // send(sock, to_string(option).c_str(), to_string(option).size() + 1, 0);
+    sendToServer(to_string(option));
 
     if (option == 1 || option == 2) {
         char username[1024];
