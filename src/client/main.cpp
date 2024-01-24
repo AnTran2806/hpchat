@@ -2,12 +2,7 @@
 
 int main() {
     Client client;
-
-
-
-
-
-    if (client.connectToServer("10.188.9.19",54000)) {
+    if (client.connectToServer("10.188.9.19", 54000)) {
         std::string roomName;
         std::cout << "Enter the Room or Your ID:  ";
         std::getline(std::cin, roomName);
