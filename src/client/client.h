@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include <algorithm>
 #include <cctype>
+#include <fstream>
 
 class Client {
 private:
@@ -29,6 +30,7 @@ public:
     void runMessageReceiver();
 
     void sendToServer(const std::string& message);
+    void sendFile(const std::string& filePath);
 };
 
 #endif // CLIENT_H
