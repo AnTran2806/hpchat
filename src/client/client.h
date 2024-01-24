@@ -12,7 +12,7 @@
 
 class Client {
 private:
-    int sock;
+    int createSocketClient;
     std::thread receivingThread;
 
     
@@ -26,7 +26,7 @@ public:
     
     bool connectToServer(const std::string& ipAddress, int port);
 
-    void startReceiving();
+    void runMessageReceiver();
 
     void sendToServer(const std::string& message);
 };
