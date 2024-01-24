@@ -1,6 +1,6 @@
 #include "server.h"
 
-void Server::handlePrivateMessage(const std::string &senderName, const std::string &receiverName, const std::string &message) {
+void Server::sendPrivateMessage(const std::string &senderName, const std::string &receiverName, const std::string &message) {
     std::lock_guard<std::mutex> guard(clientsMutex);
     Client *sender = nullptr;
     for (auto &client : clients)

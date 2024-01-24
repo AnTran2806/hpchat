@@ -10,7 +10,7 @@ Server::Server() {
 
     sockaddr_in hint;
     hint.sin_family = AF_INET;
-    hint.sin_port = htons(8080);
+    hint.sin_port = htons(54000);
     hint.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(createSocket, (sockaddr *)&hint, sizeof(hint)) == -1)
