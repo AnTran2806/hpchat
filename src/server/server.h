@@ -41,7 +41,7 @@ public:
     void start();
 
 private:
-    int serverSocket;
+    int createSocket;
     std::vector<Client> clients;
     std::mutex clientsMutex;
 

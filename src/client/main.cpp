@@ -3,7 +3,7 @@
 int main() {
     Client client;
 
-    if (client.connectToServer("10.188.9.19", 54000)) {
+    if (client.connectToServer("10.188.9.15", 8080)) {
         /// void login (){goto :abc}
         //abc:
         std::string roomName;
@@ -11,7 +11,7 @@ int main() {
         std::getline(std::cin, roomName);
         client.sendToServer(roomName);
 
-        client.startReceiving();
+        client.runMessageReceiver();
 
         std::string clientName;
         std::cout << "Enter Your name: ";
