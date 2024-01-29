@@ -6,7 +6,8 @@ bool Client::connectToServer(const std::string& ipAddress, int port) {
     hint.sin_port = htons(port);
     inet_pton(AF_INET, ipAddress.c_str(), &hint.sin_addr);
 
-    int connectRes = connect(createSocketClient, (sockaddr*)&hint, sizeof(hint));
+    // Attempt to connect to the server using the created socket and hint structure
+    int connectRes = connect(clientSocket, (sockaddr*)&hint, sizeof(hint));
     if (connectRes == -1) {
         std::cerr << "Error: Cannot connect to Server!" << std::endl;
         return false;

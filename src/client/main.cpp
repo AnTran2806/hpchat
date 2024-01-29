@@ -1,34 +1,60 @@
 #include "client.h"
 
-int main() {
+int main()
+{
     Client client;
-    if (client.connectToServer("10.188.9.19", 54000)) {
+    if (client.connectToServer("10.188.9.27", 8080))
+    {
         std::string roomName;
-        std::cout << "Enter the Room or Your ID:  ";
+        std::cout << "Enter the Room: ";
         std::getline(std::cin, roomName);
-        client.runMessageReceiver();
+        client.sendToServer(roomName);
 
         std::string clientName;
         std::cout << "Enter Your name: ";
         std::getline(std::cin, clientName);
         client.sendToServer(clientName);
-        abc:
+
+        std::cout << "Enter 'help' to get the guide\n";
+        client.startReceiving();
+        // Main loop to input and send messages from the user
         while (true) {
             std::string userInput;
+            std::cout << "You: ";
             std::getline(std::cin, userInput);
 
-            if (userInput == "exitchat") {
-                break;
-            } else if (userInput == "sendfile") {
-                std::cout << "Enter the file path to send: ";
+            if (userInput == "sendfile")
+            {
+                client.sendToServer("sendfile");
+
+                // Enter the recipient's name or room name and send it to the server
+                std::string nameOrRoom;
+                std::cout << "The name to sendFile: ";
+                std::getline(std::cin, nameOrRoom);
+                client.sendToServer(nameOrRoom);
+
+                // Enter the file path and send it to the server
                 std::string filePath;
+                std::cout << "Enter the file path to send: ";
                 std::getline(std::cin, filePath);
-                if (filePath == "exitchat") {
-                    goto abc;
-                }
-                client.sendFile(filePath);
-                
-            } else {
+                client.sendToServer(filePath);
+                std::cout << "File Name: " << filePath << std::endl;
+
+                 // Start a new thread to send the file to the server
+                std::thread sendFileThread(&Client::sendFile, &client, filePath);
+                sendFileThread.detach();
+            }
+            // Check if the user wants to see the guide
+            else if (userInput == "help") 
+            {
+                std::cout << "1. Chat Group: Entering the message then Enter\n"
+                          << "2. Private chat: Format:/pm + User's name + your message \n"
+                          << "3. Server: /sv + Your message\n"
+                          << "4. Sendfile: Entering the sendfile.\n"
+                          << "5. /pm + any word to Display the list user's name online"
+                          << std::endl;
+            }
+            else {
                 client.sendToServer(userInput);
             }
         }
