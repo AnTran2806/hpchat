@@ -66,11 +66,25 @@ public:
 
     Client* findClientByName(const string& name);
 
-    void handlePrivateMessage(const string& senderName, const string& receiverName, const string& message);
+    void sendPrivateMessage(const string& senderName, const string& receiverName, const string& message);
+
+    void start(int port);
 
     void printColoredIP(const char* ipAddress);
 
-    void start(int port);
+    string trim(const string& str);
+
+    string receiveString(int clientSocket);
+
+    void handlePrivateMessage(int clientSocket, const string& clientName, const string& roomName, string receivedMessage);
+
+    void handleServerChat(int clientSocket, const string &clientName);
+
+    void handleFileTransfer(int clientSocket, const string& clientName);
+
+    void handleGroupMessage(const string& clientName, const string& roomName, const string& receivedMessage, int clientSocket);
+
+    void handleClientOffline(int clientSocket, const string &clientName);
 
 private:
     int serverSocket;
@@ -83,20 +97,15 @@ private:
     vector<int> clientSockets;
     fd_set readfds;
 
-    unordered_map<int, string> loggedInUsers;  // Dùng để lưu trữ tên người dùng đã đăng nhập
+    unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
 
 
     bool handleRegistration(int clientSocket);
     bool handleLogin(int clientSocket);
     void handleAuthentication(int clientSocket, const string& option);
 
-
-    string trim(const string& str);
-    string receiveString(int clientSocket);
-    void handleClient(int clientSocket, const string& clientName, const string& roomName);
     void processClient(int clientSocket);
-
-
+    void handleClient(int clientSocket, const string& clientName, const string& roomName);
 };
 
 #endif // SERVER_H
