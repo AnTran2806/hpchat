@@ -1,33 +1,38 @@
 #include "server.h"
 
-void Server::start() {
+void Server::initiateServer() {
     while (true)
     {
-        sockaddr_in clientAddr;                                                            
-        socklen_t clientSize = sizeof(clientAddr);                                         
-        int acceptConnection = accept(createSocket, (sockaddr *)&clientAddr, &clientSize); 
-        if (acceptConnection == -1) {
+        // Accept new connection from client
+        sockaddr_in clientAddr;
+        socklen_t clientSize = sizeof(clientAddr);
+        int acceptConnection = accept(serverSocket, (sockaddr *)&clientAddr, &clientSize);
+        if (acceptConnection == -1)
+        {
             std::cerr << "Error when accepting client connection: " << strerror(errno) << std::endl;
             continue;
         }
 
-        // Receive room name from client
         std::string roomName = receiveString(acceptConnection);
-        if (roomName.empty()) {
+        if (roomName.empty())
+        {
             close(acceptConnection);
             continue;
         }
 
-        // Receive client name from client
         std::string clientName = receiveString(acceptConnection);
-        if (clientName.empty()) {
+        if (clientName.empty())
+        {
             close(acceptConnection);
             continue;
         }
 
+        // Add new client to clients vector
         std::lock_guard<std::mutex> guard(clientsMutex);
         clients.push_back(Client(acceptConnection, clientName, roomName));
-        std::thread clientThread(&Server::handleClient, this, acceptConnection, clientName, roomName); 
+
+        // Create new thread to handle client connection
+        std::thread clientThread(&Server::handleClient, this, acceptConnection, clientName, roomName);
         clientThread.detach();
     }
 }

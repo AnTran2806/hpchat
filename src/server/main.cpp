@@ -2,7 +2,7 @@
 
 int main() {
     Server server;
-    server.start();
+    server.initiateServer();
     
     return 0;
 }
