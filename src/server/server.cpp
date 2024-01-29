@@ -59,89 +59,7 @@ bool UserAuthentication::isLoggedIn(const string& enteredUsername, const string&
     return false;
 }
 
-Client::Client(int socket, const string& name, const string& roomName) : socket(socket), name(name), roomName(roomName) {}
 
-int Client::getSocket() const {
-    return socket;
-}
-
-const string& Client::getName() const {
-    return name;
-}
-
-const string& Client::getRoomName() const {
-    return roomName;
-}
-
-// Server::Server() {
-//     // ... (constructor implementation)
-//     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-//     if (serverSocket == -1) {
-//         cerr << "Can't create the socket" << endl;
-//         return;
-//     }
-
-//     sockaddr_in hint;
-//     hint.sin_family = AF_INET;
-//     hint.sin_port = htons(54000);
-//     hint.sin_addr.s_addr = INADDR_ANY;
-
-//     if (bind(serverSocket, (sockaddr*)&hint, sizeof(hint)) == -1) {
-//         cerr << "Bind failed!" << endl;
-//         close(serverSocket);
-//         return;
-//     }
-
-//     if (listen(serverSocket, SOMAXCONN) == -1) {
-//         cerr << "Listen failed!" << endl;
-//         close(serverSocket);
-//         return;
-//     }
-// } 
-
-Client* Server::findClientByName(const string& name) {
-    // ... (findClientByName implementation)
-    lock_guard<mutex> guard(clientsMutex);
-    auto it = find_if(clients.begin(), clients.end(), [this,name](const Client& client) {
-        return trim(client.getName()) == trim(name);
-    });
-    return (it != clients.end()) ? &(*it) : nullptr;
-}
-
-void Server::handlePrivateMessage(const string& senderName, const string& receiverName, const string& message) {
-    // ... (handlePrivateMessage implementation)
-    // Lock the clientsMutex to ensure thread safety
-    lock_guard<mutex> guard(clientsMutex);
-
-    // Find the sender in the clients array
-    Client* sender = nullptr;
-    for (auto& client : clients) {
-        if (client.getName() == senderName) {
-            sender = &client;
-        }
-    }
-
-    // If the sender is found, iterate through all clients to find the receiver
-    if (sender) {
-        for (auto& client : clients) {
-            if (client.getName() == receiverName) {
-                
-                //int sendResult = sendPrivateMessage(client.getSocket(), message);Sai
-                send(client.getSocket(),message.c_str(),message.size()+1,0);
-                
-                //cout << "Send result: " << sendResult << endl;
-                // Print the private message sent from sender to receiver
-                // cout << "Private message sent from " << senderName << " to " << receiverName << ": " << message << endl;
-                return;  // Exit the function after sending the message to one receiver
-            }
-        }
-        // Print an error message if the receiver is not found
-        cerr << "Error: Receiver not found!" << endl;
-    } else {
-        // Print an error message if the sender is not found
-        cerr << "Error: Sender not found!" << endl;
-    }
-}
 
 bool Server::handleRegistration(int clientSocket)
     {
@@ -169,22 +87,9 @@ bool Server::handleRegistration(int clientSocket)
         return status;
     }
 
+
 bool Server::handleLogin(int clientSocket)
 {
-    char usernameBuffer[1024] = {0};
-    char passwordBuffer[1024] = {0};
-
-    read(clientSocket, usernameBuffer, 1024);
-    cout << "Here is handleLogin Fucntion" << endl;
-    read(clientSocket, passwordBuffer, 1024);
-
-    string username(usernameBuffer);
-    string password(passwordBuffer);
-    bool status = auth.isLoggedIn(username, password);
-    const char *response = status ? "Login successful." : "Login failed.";
-    send(clientSocket, response, strlen(response), 0);  
-    
-    // Get and print the client's IP address
     sockaddr_in clientAddr;
     socklen_t addrLen = sizeof(clientAddr);
     getpeername(clientSocket, (struct sockaddr*)&clientAddr, &addrLen);
@@ -192,69 +97,179 @@ bool Server::handleLogin(int clientSocket)
     char clientIP[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
 
-    cout << "Login successful at IP address ";
-    printColoredIP(clientIP);
-    cout << " with the username is " << username;
-    cout << endl;
+    char usernameBuffer[1024] = {0};
+    char passwordBuffer[1024] = {0};
+
+    // read(clientSocket, usernameBuffer, 1024);
+    cout << "Here is handleLogin Fucntion" << endl;
+    // read(clientSocket, passwordBuffer, 1024);
+    recv(clientSocket, usernameBuffer, sizeof(usernameBuffer), 0);
+    recv(clientSocket, passwordBuffer, sizeof(passwordBuffer), 0);
+
+    string username(usernameBuffer);
+    string password(passwordBuffer);
+    bool status = auth.isLoggedIn(username, password);
+
+    const char *response = status ? "Login successful." : "Login failed.";
+    if(strcmp(response, "Login successful.") == 0){
+        cout << "Login successful at IP address ";
+        printColoredIP(clientIP);
+        cout << " with the username is " << username;
+        cout << endl;
+    } else{
+        cout << "Login failed at IP address ";
+        printColoredIP(clientIP);
+        cout << endl;
+    }
+
+    send(clientSocket, response, strlen(response), 0);  
+
+    // After confirming successful login, save the username to the list
+    loggedInUsers[clientSocket] = username;
 
     return status;
 }
 
-void Server::handleAuthentication(int clientSocket, int option)
+void Server::handleAuthentication(int clientSocket, const string& option)
     {
         bool check = false;
         string username;
         while(!check)
         {   
-            char buffer[4096];
-            // int option;
-            // try {
-            //     option = stoi(string(buffer, 0, bytesReceived));
-            // } catch (const std::invalid_argument& e) {
-            //     cerr << "Invalid option received: " << e.what() << endl;
-            //     // Handle the error, possibly by sending an error message to the client
-            //     // and asking for input again.
-            //     continue; // Skip the rest of the loop and go back to the beginning.
-            // }
-
-            if (option == 1)
+            // char buffer[4096];
+            if (option == "A")
             {
                 // Register
                 cout<<"Client is registering."<<endl;
                 check = handleRegistration(clientSocket);
             }
-            else if (option == 2)
+            else if (option == "B")
             {
                 // Login
                 cout<<"Client has logged in."<<endl;
                 check = handleLogin(clientSocket);
-                if (check) {
-                    int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
-                    username = string(buffer, 0, bytesReceived); // Store the username
-                }
             }
         }
+        // Detach the thread before proceeding
+        thread processThread(&Server::processClient, this, clientSocket);
+        processThread.join();
+
+
+
+        // auto processThread = async(&Server::processClient, this, clientSocket);
+        // auto processThread = async(launch::async, &Server::processClient, this, clientSocket);
+
+        // Spawn a new thread for each accepted connection
+        // thread(&Server::processClient, this, clientSocket).detach();
+
+    }    
+
+
+void Server::processClient(int clientSocket)
+    {
         string roomName = receiveString(clientSocket);
         if (roomName.empty()) {
+            cerr << "Error: Unable to receive room name. Closing connection." << endl;
             close(clientSocket);
             // continue;
         }
+        cout << "Room name is " << roomName << endl;
 
         // Receive client name from client
         // string clientName = receiveString(clientSocket);
         // if (clientName.empty()) {
         //     close(clientSocket);
-        //     continue;
+        //     // continue;
         // }
+        // cout << "Client name is " << clientName << endl;
+
+
+
+
+        // Kiểm tra xem client có đăng nhập không
+        if (loggedInUsers.find(clientSocket) == loggedInUsers.end()) {
+            cerr << "Error: Client not logged in. Closing connection." << endl;
+            close(clientSocket);
+            return;
+        }
+
+        string clientName = loggedInUsers[clientSocket];
+        cout << "Username is " << clientName << endl;
+
+
 
         lock_guard<mutex> guard(clientsMutex);
-        // clients.push_back(Client(clientSocket, clientName, roomName));
-        clients.push_back(Client(clientSocket, username, roomName)); // Pass the username
+        clients.push_back(Client(clientSocket, clientName, roomName)); // Pass the username
+        cout << "Client " << clientName << " joined room " << roomName << endl;
 
-        // thread clientThread(&Server::handleClient, this, clientSocket, clientName, roomName);
-        thread clientThread(&Server::handleClient, this, clientSocket, username, roomName); // Pass the username
+
+       
+        thread clientThread(&Server::handleClient, this, clientSocket, clientName, roomName); // Pass the username
         clientThread.detach();
     }
+
+
+Client::Client(int socket, const string& name, const string& roomName) : socket(socket), name(name), roomName(roomName) {}
+
+int Client::getSocket() const {
+    return socket;
+}
+
+const string& Client::getName() const {
+    return name;
+}
+
+const string& Client::getRoomName() const {
+    return roomName;
+}
+
+
+
+
+
+Client* Server::findClientByName(const string& name) {
+    // ... (findClientByName implementation)
+    lock_guard<mutex> guard(clientsMutex);
+    auto it = find_if(clients.begin(), clients.end(), [this,name](const Client& client) {
+        return trim(client.getName()) == trim(name);
+    });
+    return (it != clients.end()) ? &(*it) : nullptr;
+}
+
+
+
+void Server::handlePrivateMessage(const string& senderName, const string& receiverName, const string& message) {
+    // ... (handlePrivateMessage implementation)
+    // Lock the clientsMutex to ensure thread safety
+    lock_guard<mutex> guard(clientsMutex);
+
+    // Find the sender in the clients array
+    Client* sender = nullptr;
+    for (auto& client : clients) {
+        if (client.getName() == senderName) {
+            sender = &client;
+        }
+    }
+
+    // If the sender is found, iterate through all clients to find the receiver
+    if (sender) {
+        for (auto& client : clients) {
+            if (client.getName() == receiverName) {
+                
+                send(client.getSocket(),message.c_str(),message.size()+1,0);
+                return;  // Exit the function after sending the message to one receiver
+            }
+        }
+        // Print an error message if the receiver is not found
+        cerr << "Error: Receiver not found!" << endl;
+    } else {
+        // Print an error message if the sender is not found
+        cerr << "Error: Sender not found!" << endl;
+    }
+}
+
+
+
 
 void Server::printColoredIP(const char* ipAddress) {
     cout << "\033[1;32m" << ipAddress << "\033[0m"; // Set color to green
@@ -263,16 +278,6 @@ void Server::printColoredIP(const char* ipAddress) {
 Server::Server(){}
 
 void Server::start(int port) {
-    // ... (start implementation)
-    // while (true) {
-    //     sockaddr_in clientAddr;
-    //     socklen_t clientSize = sizeof(clientAddr);
-    //     int clientSocket = accept(serverSocket, (sockaddr*)&clientAddr, &clientSize);
-    //     if (clientSocket == -1) {
-    //         cerr << "Error when create the socket from client" << endl;
-    //         continue;
-    //     }
-
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == -1)
     {
@@ -282,8 +287,8 @@ void Server::start(int port) {
     }
 
     // Set socket as reusable
-    int reuse = 1;
-    setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+    // int reuse = 1;
+    // setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
 
 
     serverAddr.sin_family = AF_INET;
@@ -324,6 +329,10 @@ void Server::start(int port) {
             }
         }
 
+        // fd_set tempReadfds = readfds; // Create a copy of readfds
+
+
+
         // Use select to wait for events on sockets
         int activity = select(maxSocket + 1, &readfds, nullptr, nullptr, nullptr);
 
@@ -335,6 +344,8 @@ void Server::start(int port) {
 
         // New connection
         if (FD_ISSET(serverSocket, &readfds))
+        // if (FD_ISSET(serverSocket, &tempReadfds))
+
         {
             sockaddr_in clientAddr;
             socklen_t clientAddrLen = sizeof(clientAddr);
@@ -346,8 +357,6 @@ void Server::start(int port) {
             }
             else
             {
-                // cout << "Connected to the client." << endl;
-                // clientSockets.push_back(newClientSocket);
                 char clientIP[INET_ADDRSTRLEN];
                 inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
 
@@ -356,6 +365,15 @@ void Server::start(int port) {
                 cout << endl;
 
                 clientSockets.push_back(newClientSocket);
+
+                // Add the new client socket to the set
+                // FD_SET(newClientSocket, &readfds);
+
+                // // Update maxSocket if needed
+                // if (newClientSocket > maxSocket)
+                // {
+                //     maxSocket = newClientSocket;
+                // }
             }
         }
         
@@ -364,6 +382,7 @@ void Server::start(int port) {
             int clientSocket = *it;
 
             if (FD_ISSET(clientSocket, &readfds))
+            // if (FD_ISSET(clientSocket, &tempReadfds))
             {
                 char buffer[BUFFER_SIZE];
                 memset(buffer, 0, sizeof(buffer));
@@ -373,33 +392,23 @@ void Server::start(int port) {
                 {
                     cerr << "Connection closed." << endl;
                     close(clientSocket);
+                    // FD_CLR(clientSocket, &readfds); // Remove the client socket from the set
                     it = clientSockets.erase(it);
                 }
                 else
                 {
-                    int option;
+                    string option;
                     try {
-                        option = stoi(string(buffer, 0, bytesReceived));
+                        option = string(buffer, 0, bytesReceived);
                     } catch (const invalid_argument& e) {
                         cerr << "Invalid option received: " << e.what() << endl;
                         // Handle the error, possibly by sending an error message to the client
                         // and asking for input again.
                         continue; // Skip the rest of the loop and go back to the beginning.
                     }
-                    
-                    cout << "dô luồng" << endl;
-                    thread processThread(&Server::handleAuthentication, this, clientSocket, option);
-                    processThread.detach();
-                    // cout << "Client " << clientSocket << ": " << buffer << endl;
 
-                    // // Send data to client
-                    // cout << "Server: ";
-                    // cin.getline(buffer, sizeof(buffer));
-                    // send(clientSocket, buffer, strlen(buffer), 0);
-                    // handleAuthentication(clientSocket);   
-                    // handleAuthentication(clientSocket, bytesReceived); // Get the username
-                    // Receive room name from client
-                    
+                    cout << "Passed connection..." << endl;
+                    handleAuthentication(clientSocket, option);          
                     ++it;
                 }
             }
@@ -481,7 +490,6 @@ void Server::handleClient(int clientSocket, const string& clientName, const stri
 
                         handlePrivateMessage(clientName, receiverName, Private + " " + clientNameColor + ": " + messageColor);
                         bytesReceived = recv(clientSocket, buffer, 4096, 0);
-                        //handleClientOffline(clientSocket,clientName,roomName,bytesReceived);
                         if (bytesReceived <= 0) {
                             cerr << "Client " << clientName << " offline!" << endl;
                             return;
@@ -528,12 +536,9 @@ void Server::handleClient(int clientSocket, const string& clientName, const stri
                              break; // Thoát khỏi vòng lặp khi client đã thoát
                             }
                     }
-
                         
                     string userInput;
                     bool exitChat = false;
-                    // bool exitChatRequested = false;
-
                         while (!exitChat) {
                             fd_set readSet;
                             FD_ZERO(&readSet);

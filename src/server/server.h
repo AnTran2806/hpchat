@@ -17,6 +17,9 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <sys/select.h>
+#include <sstream>
+#include <future>
+#include <unordered_map>
 
 using namespace std;
 
@@ -29,6 +32,7 @@ class UserAuthentication
 private:
     string username;
     string password;
+
 
 public:
     UserAuthentication();
@@ -79,13 +83,18 @@ private:
     vector<int> clientSockets;
     fd_set readfds;
 
+    unordered_map<int, string> loggedInUsers;  // Dùng để lưu trữ tên người dùng đã đăng nhập
+
+
     bool handleRegistration(int clientSocket);
     bool handleLogin(int clientSocket);
-    void handleAuthentication(int clientSocket, int option);
+    void handleAuthentication(int clientSocket, const string& option);
+
 
     string trim(const string& str);
     string receiveString(int clientSocket);
     void handleClient(int clientSocket, const string& clientName, const string& roomName);
+    void processClient(int clientSocket);
 
 
 };
