@@ -1,12 +1,12 @@
 #include "client.h"
 
-void Client::sendFile(const std::string &filePath)
+void Client::sendFile(const string &filePath)
 {
     // Open the file for reading in binary mode
-    std::ifstream file(filePath, std::ios::binary);
+    ifstream file(filePath, ios::binary);
     if (!file.is_open())
     {
-        std::cerr << "Error opening file for reading: " << filePath << std::endl;
+        cerr << "Error opening file for reading: " << filePath << endl;
         return;
     }
     char buffer[4096];
@@ -19,5 +19,5 @@ void Client::sendFile(const std::string &filePath)
     // Send a termination message indicating the end of file transmission
     send(sock, "endsendfile", strlen("endsendfile") + 1, 0);
     file.close();
-    std::cout << "File sent successfully.\n";
+    cout << "File sent successfully.\n";
 }

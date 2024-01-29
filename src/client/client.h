@@ -12,6 +12,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/types.h>
+#include <fstream>
 
 
 using namespace std;
@@ -30,6 +31,8 @@ public:
     ~Client();
     
     bool connectToServer(const string& ipAddress, int port);
+    
+    void runMessageReceiver();
 
     void startReceiving();
     void receiveFile();
@@ -39,6 +42,11 @@ public:
     void handleUserInteraction();
 
     string trim(const string& str);
+    
+    void sendFile(const string& filePath);
+
+    void receiveFile();
+
 };
 
 #endif // CLIENT_H
