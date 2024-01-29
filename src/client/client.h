@@ -14,7 +14,6 @@
 class Client {
 private:
     int sock;
-    int clientSocket;
     std::thread receivingThread;
     std::string clientName;
     std::string roomName;

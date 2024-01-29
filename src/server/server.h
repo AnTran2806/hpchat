@@ -40,9 +40,9 @@ public:
     std::string trim(const std::string &str);
     std::string receiveString(int clientSocket);
     void handlePrivateMessage(int clientSocket, 
-                             const std::string& clientName, 
-                             const std::string& roomName,
-                             std::string receivedMessage);
+                              const std::string& clientName, 
+                              const std::string& roomName,
+                              std::string receivedMessage);
     void handleServerChat(int clientSocket, const std::string& clientName);
     void handleFileTransfer(int clientSocket, const std::string& clientName);
     void handleGroupMessage(const std::string& clientName, 
