@@ -1,22 +1,22 @@
 #include "client.h"
 
 Client::Client() {
-    clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (clientSocket == -1) {
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock == -1) {
         std::cerr << "Error: Create the socket" << std::endl;
         return;
     }
 }
 
 Client::~Client() {
-    close(clientSocket);
+    close(sock);
     if (receivingThread.joinable()) {
         receivingThread.join();
     }
 }
 
 void Client::sendToServer(const std::string& message) {
-    send(clientSocket, message.c_str(), message.size() + 1, 0);
+    send(sock, message.c_str(), message.size() + 1, 0);
 }
 
 std::string Client::trim(const std::string& str) {
