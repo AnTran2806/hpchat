@@ -1,9 +1,9 @@
 #include "server.h"
 
-void Server::sendPrivateMessage(const std::string &senderName, const std::string &receiverName, const std::string &message)
+void Server::sendPrivateMessage(const string &senderName, const string &receiverName, const string &message)
 {
     // Lock the clientsMutex to ensure thread safety
-    std::lock_guard<std::mutex> guard(clientsMutex);
+    lock_guard<mutex> guard(clientsMutex);
 
     // Find the sender in the clients array
     Client *sender = nullptr;
@@ -24,9 +24,9 @@ void Server::sendPrivateMessage(const std::string &senderName, const std::string
                 return;
             }
         }
-        std::cerr << "Error: Receiver not found!" << std::endl;
+        cerr << "Error: Receiver not found!" << endl;
     }
     else {
-        std::cerr << "Error: Sender not found!" << std::endl;
+        cerr << "Error: Sender not found!" << endl;
     }
 }

@@ -3,56 +3,51 @@
 int main()
 {
     Client client;
-    if (client.connectToServer("10.188.9.27", 8081))
-    {
-        std::string roomName;
-        std::cout << "Enter the Room: ";
-        std::getline(std::cin, roomName);
+
+    if (client.connectToServer(IP_SERVER, PORT)) {
+        client.handleUserInteraction();
+        string roomName;
+        cout << "Enter the ID or RoomName: ";
+        getline(cin, roomName);
         client.sendToServer(roomName);
-
-        std::string clientName;
-        std::cout << "Enter Your name: ";
-        std::getline(std::cin, clientName);
-        client.sendToServer(clientName);
-
-        std::cout << "Enter 'help' to get the guide\n";
+        cout << "Enter 'help' to get the guide\n";
         client.startReceiving();
-        // Main loop to input and send messages from the user
+
         while (true) {
-            std::string userInput;
-            std::cout << "You: ";
-            std::getline(std::cin, userInput);
+            string userInput;
+            cout << "You: ";
+            getline(cin, userInput);
 
             if (userInput == "sendfile")
             {
                 client.sendToServer("sendfile");
 
                 // Enter the recipient's name or room name and send it to the server
-                std::string nameOrRoom;
-                std::cout << "The name to sendFile: ";
-                std::getline(std::cin, nameOrRoom);
+                string nameOrRoom;
+                cout << "The name to sendFile: ";
+                getline(cin, nameOrRoom);
                 client.sendToServer(nameOrRoom);
 
                 // Enter the file path and send it to the server
-                std::string filePath;
-                std::cout << "Enter the file path to send: ";
-                std::getline(std::cin, filePath);
+                string filePath;
+                cout << "Enter the file path to send: ";
+                getline(cin, filePath);
                 client.sendToServer(filePath);
-                std::cout << "File Name: " << filePath << std::endl;
+                cout << "File Name: " << filePath << endl;
 
                  // Start a new thread to send the file to the server
-                std::thread sendFileThread(&Client::sendFile, &client, filePath);
+                thread sendFileThread(&Client::sendFile, &client, filePath);
                 sendFileThread.detach();
             }
             // Check if the user wants to see the guide
             else if (userInput == "help") 
             {
-                std::cout << "1. Chat Group: Entering the message then Enter\n"
+                cout << "1. Chat Group: Entering the message then Enter\n"
                           << "2. Private chat: Format:/pm + User's name + your message \n"
                           << "3. Server: /sv + Your message\n"
                           << "4. Sendfile: Entering the sendfile.\n"
                           << "5. /pm + any word to Display the list user's name online"
-                          << std::endl;
+                          << endl;
             }
             else {
                 client.sendToServer(userInput);

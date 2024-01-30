@@ -2,7 +2,7 @@
 
 int main() {
     Server server;
-    server.initiateServer();
+    server.start(PORT);
     
     return 0;
 }

@@ -1,14 +1,14 @@
 #include "server.h"
 
-void Server::handleServerChat(int clientSocket, const std::string &clientName)
+void Server::handleServerChat(int clientSocket, const string &clientName)
 {
     // Display a message indicating that the client wants to chat with the server
-    std::string clientNameMessage = "\033[1;34m" + clientName + "\033[0m";
-    std::cout << clientNameMessage << " wants to chat with the server." << std::endl;
+    string clientNameMessage = "\033[1;34m" + clientName + "\033[0m";
+    cout << clientNameMessage << " wants to chat with the server." << endl;
 
     // Loop for handling server chat
-    std::string privateClientMessage;
-    std::string userInput;
+    string privateClientMessage;
+    string userInput;
     char buffer[4096];
     while (true)
     {
@@ -23,8 +23,8 @@ void Server::handleServerChat(int clientSocket, const std::string &clientName)
         timeout.tv_sec = 0;
         timeout.tv_usec = 0;
 
-        int ready = select(std::max(STDIN_FILENO, clientSocket) + 1, &readSet, NULL, NULL, &timeout);
-        std::string exitNotification = "\033[1;32mYou exited the private chat with SERVER\033[0m";
+        int ready = select(max(STDIN_FILENO, clientSocket) + 1, &readSet, NULL, NULL, &timeout);
+        string exitNotification = "\033[1;32mYou exited the private chat with SERVER\033[0m";
 
         if (ready > 0)
         {
@@ -34,42 +34,42 @@ void Server::handleServerChat(int clientSocket, const std::string &clientName)
                 int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
                 if (bytesReceived <= 0)
                 {
-                    std::cerr << "Client " << clientName << " offline!" << std::endl;
+                    cerr << "Client " << clientName << " offline!" << endl;
                     break;
                 }
                 else {
                     // Process the received message from the client
-                    privateClientMessage = std::string(buffer, 0, bytesReceived);
+                    privateClientMessage = string(buffer, 0, bytesReceived);
                     if (privateClientMessage.compare(0, 4, "exit") == 0)
                     {
-                        std::cout << "\033[1;32mYou exited the private chat with SERVER\033[0m" << std::endl;
+                        cout << "\033[1;32mYou exited the private chat with SERVER\033[0m" << endl;
                         send(clientSocket, exitNotification.c_str(), exitNotification.size() + 1, 0);
                         break;
                     }
-                    std::cout << clientNameMessage << ": " << privateClientMessage << std::endl;
+                    cout << clientNameMessage << ": " << privateClientMessage << endl;
                 }
             }
 
             if (FD_ISSET(STDIN_FILENO, &readSet))
             {
-                std::getline(std::cin, userInput);
+                getline(cin, userInput);
                 if (userInput.compare(0, 4, "exit") == 0)
                 {
-                    std::cout << "\033[1;32mYou exited the private chat with SERVER\033[0m" << std::endl;
+                    cout << "\033[1;32mYou exited the private chat with SERVER\033[0m" << endl;
                     send(clientSocket, exitNotification.c_str(), exitNotification.size() + 1, 0);
                     break;
                 }
                 else {
                     // Handle user input and send messages to the server
                     size_t spacePos1 = userInput.find(' ');
-                    if (spacePos1 != std::string::npos)
+                    if (spacePos1 != string::npos)
                     {
                         // Extract receiver's name and message
-                        std::string firstPart = trim(userInput.substr(0, spacePos1));
-                        std::string secondPart = trim(userInput.substr(spacePos1 + 1));
+                        string firstPart = trim(userInput.substr(0, spacePos1));
+                        string secondPart = trim(userInput.substr(spacePos1 + 1));
                         // Construct the message to be sent to the server
-                        std::string privateServer = "\033[1;31mServer: \033[0m";
-                        std::string messageOfServer = privateServer + secondPart;
+                        string privateServer = "\033[1;31mServer: \033[0m";
+                        string messageOfServer = privateServer + secondPart;
 
                         // Send the message to the specified client
                         if (clients.size() == 1)
@@ -77,7 +77,7 @@ void Server::handleServerChat(int clientSocket, const std::string &clientName)
                             auto &client = clients[0];
                             if (firstPart == client.getName())
                             {
-                                std::cout << "You sent a message to: " << firstPart << std::endl;
+                                cout << "You sent a message to: " << firstPart << endl;
                                 send(client.getSocket(), messageOfServer.c_str(), messageOfServer.size() + 1, 0);
                             }
                         }
@@ -86,7 +86,7 @@ void Server::handleServerChat(int clientSocket, const std::string &clientName)
                             {
                                 if (firstPart == client.getName())
                                 {
-                                    std::cout << "You sent a message to: " << firstPart << std::endl;
+                                    cout << "You sent a message to: " << firstPart << endl;
                                     send(client.getSocket(), messageOfServer.c_str(), messageOfServer.size() + 1, 0);
                                 }
                             }
@@ -96,6 +96,6 @@ void Server::handleServerChat(int clientSocket, const std::string &clientName)
             }
         }
         // Sleep for a short interval to reduce CPU usage
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        this_thread::sleep_for(chrono::milliseconds(500));
     }
 }
