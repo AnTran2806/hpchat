@@ -13,52 +13,99 @@
 #include <cctype>
 #include <chrono>
 #include <fstream>
+#include <map>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <sys/select.h>
+#include <sstream>
+#include <future>
+#include <unordered_map>
+#include <set>
+
 using namespace std;
+
+const int PORT = 4444;
+const int BUFFER_SIZE = 1024;
+const int MAX_CLIENTS = 10;
+
+class UserAuthentication
+{
+private:
+    string username;
+    string password;
+
+public:
+    UserAuthentication();
+
+    bool isUserRegistered(const string &checkUsername);
+
+    bool registerUser(const string &enteredUsername, const string &enteredPassword);
+
+    bool isLoggedIn(const string &enteredUsername, const string &enteredPassword);
+};
 
 class Client {
 public:
-    Client(int socket, const std::string& name, const std::string& roomName);
+    Client(int socket, const string& name, const string& roomName);
+
     int getSocket() const;
-    const std::string& getName() const;
-    const std::string& getRoomName() const;
+
+    const string& getName() const;
+
+    const string& getRoomName() const;
 
 private:
     int socket;
-    std::string name;
-    std::string roomName;
+    string name;
+    string roomName;
 };
 
 class Server {
 public:
     Server();
 
-    Client* findClientByName(const std::string& name);
-    void sendPrivateMessage(const std::string& senderName, 
-                            const std::string& receiverName, 
-                            const std::string& message);
-    void initiateServer();
-    std::string trim(const std::string &str);
-    std::string receiveString(int clientSocket);
-    void handlePrivateMessage(int clientSocket, 
-                              const std::string& clientName, 
-                              const std::string& roomName,
-                              std::string receivedMessage);
-    void handleServerChat(int clientSocket, const std::string& clientName);
-    void handleFileTransfer(int clientSocket, const std::string& clientName);
-    void handleGroupMessage(const std::string& clientName, 
-                            const std::string& roomName, 
-                            const std::string& receivedMessage,
-                            int clientSocket);
-    void handleClientOffline(int clientSocket, const std::string& clientName);
+    Client* findClientByName(const string& name);
+
+    void sendPrivateMessage(const string& senderName, const string& receiverName, const string& message);
+
+    void start(int port);
+
+    void printColoredIP(const char* ipAddress);
+
+    string trim(const string& str);
+
+    string receiveString(int clientSocket);
+
+    void handlePrivateMessage(int clientSocket, const string& clientName, const string& roomName, string receivedMessage);
+
+    void handleServerChat(int clientSocket, const string &clientName);
+
+    void handleFileTransfer(int clientSocket, const string& clientName);
+
+    void handleGroupMessage(const string& clientName, const string& roomName, const string& receivedMessage, int clientSocket);
+
+    void handleClientOffline(int clientSocket, const string &clientName);
 
 private:
     int serverSocket;
-    std::vector<Client> clients;
-    std::mutex clientsMutex;
+    int clientSocket;
+    int maxSocket;
+    sockaddr_in serverAddr;
+    vector<Client> clients;
+    mutex clientsMutex;
+    UserAuthentication auth;
+    vector<int> clientSockets;
+    fd_set readfds;
 
-    void handleClient(int clientSocket, 
-                      const std::string& clientName, 
-                      const std::string& roomName);
+    unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
+
+
+    bool handleRegistration(int clientSocket);
+    bool handleLogin(int clientSocket);
+    void handleAuthentication(int clientSocket, const string& option);
+
+    void processClient(int clientSocket);
+    void handleClient(int clientSocket, const string& clientName, const string& roomName);
 };
 
 #endif // SERVER_H
