@@ -20,6 +20,7 @@
 #include <sstream>
 #include <future>
 #include <unordered_map>
+#include <set>
 
 using namespace std;
 
@@ -32,7 +33,6 @@ class UserAuthentication
 private:
     string username;
     string password;
-
 
 public:
     UserAuthentication();

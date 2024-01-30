@@ -41,6 +41,8 @@ public:
 
     void handleUserInteraction();
 
+    void enterCredential();
+
     string trim(const string& str);
     
     void sendFile(const string& filePath);
