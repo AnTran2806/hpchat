@@ -1,23 +1,24 @@
 #include "client.h"
 
-void Client::sendFile(const string &filePath)
-{
-    // Open the file for reading in binary mode
-    ifstream file(filePath, ios::binary);
-    if (!file.is_open())
-    {
-        cerr << "Error opening file for reading: " << filePath << endl;
-        return;
+void Client:: sendFile(const string& filePath) {
+        ifstream file(filePath, std::ios::binary);
+        if (!file.is_open()) {
+            cerr << "Error opening file for reading: " << filePath << std::endl;
+            return;
+        }
+
+        // send the byte of the file before sending the data
+        file.seekg(0, std::ios::end);
+        int fileSize = file.tellg();
+        file.seekg(0, std::ios::beg);
+        send(sock, reinterpret_cast<char*>(&fileSize), sizeof(fileSize), 0);
+
+        char buffer[4096];
+        while (!file.eof()) {
+            file.read(buffer, sizeof(buffer));
+            send(sock, buffer, file.gcount(), 0);
+        }
+        file.close();
+        cout << " File sent successfully, please press the endsendfile to end this.\n";
+        
     }
-    char buffer[4096];
-    // Read data from the file until the end of file is reached
-    while (!file.eof())
-    {
-        file.read(buffer, sizeof(buffer));
-        send(sock, buffer, file.gcount(), 0);
-    }
-    // Send a termination message indicating the end of file transmission
-    send(sock, "endsendfile", strlen("endsendfile") + 1, 0);
-    file.close();
-    cout << "File sent successfully.\n";
-}
