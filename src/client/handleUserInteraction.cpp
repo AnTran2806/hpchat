@@ -4,8 +4,12 @@ void Client::handleUserInteraction() {
     string option;
     // cout << "Press Enter to continue" << endl;
     // cin.get();
-    cout << "A: Register" << endl << "B: Login" << endl << "Your Choice: ";
+    cout << "\t\033[1;34mWelcome to Chat Application!\033[0m" << endl;
+    cout << "\033[1mA:\033[0m Sign Up" << endl;
+    cout << "\033[1mB:\033[0m Sign In" << endl;
+    cout << "\033[1mYour Choice:\033[0m ";
     cin >> option;
+    cout << endl;
     cin.ignore();
 
     // send(sock, to_string(option).c_str(), to_string(option).size() + 1, 0);
@@ -17,6 +21,7 @@ void Client::handleUserInteraction() {
             if (option == "A") {
                 bool registrationSuccess = false;
                 do {
+                    cout << "\t\033[3mSign Up\033[0m" << endl;
                     enterCredential();
                     char buffer[1024] = {0};
                     read(sock, buffer, 1024);
@@ -32,6 +37,7 @@ void Client::handleUserInteraction() {
                     }
                 } while (!registrationSuccess);
             } else if (option == "B") {
+                cout << "\t\033[3mSign In\033[0m" << endl;
                 enterCredential();
                 char buffer[1024] = {0};
                 read(sock, buffer, 1024);
@@ -50,5 +56,6 @@ void Client::handleUserInteraction() {
     } else {
         cout << "Invalid option" << endl;
     }
+
 }
 
