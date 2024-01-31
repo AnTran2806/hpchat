@@ -16,7 +16,7 @@ bool Server::handleRegistration(int clientSocket)
     const char *response;
     if (status)
     {
-        response = "Registration successful. ";
+        response = "Registration successful.";
         send(clientSocket, response, strlen(response), 0);
         handleLogin(clientSocket);
     }
