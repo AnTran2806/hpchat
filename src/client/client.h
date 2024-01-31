@@ -28,6 +28,7 @@ private:
     
 public:
     Client();
+
     ~Client();
     
     bool connectToServer(const string& ipAddress, int port);
@@ -35,7 +36,6 @@ public:
     void runMessageReceiver();
 
     void startReceiving();
-    void receiveFile();
 
     void sendToServer(const string& message);
 
