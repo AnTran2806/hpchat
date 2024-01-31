@@ -17,11 +17,15 @@ bool Server::handleRegistration(int clientSocket)
     if (status)
     {
         response = "Registration successful.";
+        send(clientSocket, response, strlen(response), 0);
+        handleLogin(clientSocket);
     }
     else
     {
         response = "Username already exists. Choose a different username.";
+        send(clientSocket, response, strlen(response), 0);
+
     }
-    send(clientSocket, response, strlen(response), 0);
+    // send(clientSocket, response, strlen(response), 0);
     return status;
 }
