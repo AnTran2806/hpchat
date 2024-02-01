@@ -43,6 +43,10 @@ public:
 
     void enterCredential();
 
+    void enterRoomName();
+
+    void processFunction();
+
     string trim(const string& str);
     
     void sendFile(const string& filePath);
