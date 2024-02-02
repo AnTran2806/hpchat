@@ -1,6 +1,6 @@
 ## hpchat
 
-# Requirements: Building a chat application to explore various aspects of software development, including networking, user interfaces, and real-time communication. Here are some ideas for chat-related projects in C/C++:
+# Requirements: Building a chat application to explore various aspects of software development, including networking and real-time communication. Here are some ideas for chat-related projects in C/C++:
 1.	Console-Based Chat Application:
     - Create a simple console-based chat application where users can send and receive messages. This project will help you understand basic socket programming and message handling.
 2.	TCP/IP Chat Server and Client:
