@@ -110,7 +110,8 @@ void Server::start(int port)
                     }
 
                     cout << "Passed connection..." << endl;
-                    handleAuthentication(clientSocket, option);          
+                    thread authenThread(&Server::handleAuthentication, this, clientSocket, option);
+                    authenThread.join();
                     ++it;
                 }
             }
