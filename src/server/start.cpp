@@ -73,9 +73,9 @@ void Server::start(int port)
                 char clientIP[INET_ADDRSTRLEN];
                 inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
 
-                cout << "Connected to the client with IP: ";
-                printColoredIP(clientIP);
-                cout << endl;
+                //cout << "Connected to the client with IP: " << "\033[1;32m" << clientIP << "\033[0m"<<endl;
+                //printColoredIP(clientIP);
+                //cout << endl;
 
                 clientSockets.push_back(newClientSocket);
             }
@@ -109,9 +109,10 @@ void Server::start(int port)
                         continue; // Skip the rest of the loop and go back to the beginning.
                     }
 
-                    cout << "Passed connection..." << endl;
+                    //cout << "Passed connection..." << endl;
                     thread authenThread(&Server::handleAuthentication, this, clientSocket, option);
                     authenThread.join();
+                    //authenThread.detach();
                     ++it;
                 }
             }

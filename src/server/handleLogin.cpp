@@ -13,7 +13,7 @@ bool Server::handleLogin(int clientSocket)
     char passwordBuffer[1024] = {0};
 
     // read(clientSocket, usernameBuffer, 1024);
-    cout << "Here is handleLogin Fucntion" << endl;
+    //cout << "Here is handleLogin Fucntion" << endl;
     // read(clientSocket, passwordBuffer, 1024);
     recv(clientSocket, usernameBuffer, sizeof(usernameBuffer), 0);
     recv(clientSocket, passwordBuffer, sizeof(passwordBuffer), 0);
@@ -24,14 +24,8 @@ bool Server::handleLogin(int clientSocket)
 
     const char *response = status ? "Login successful." : "Login failed.";
     if(strcmp(response, "Login successful.") == 0){
-        cout << "Login successful at IP address ";
-        printColoredIP(clientIP);
-        cout << " with the username is " << username << endl;
-    } else{
-        cout << "Login failed at IP address ";
-        printColoredIP(clientIP);
-        cout << endl;
-    }
+        cout <<username << " signed successful at IP address " << "\033[1;32m" << clientIP << "\033[0m"<<endl; 
+    } 
 
     send(clientSocket, response, strlen(response), 0);  
 

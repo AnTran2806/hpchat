@@ -19,6 +19,6 @@ void Client:: sendFile(const string& filePath) {
             send(sock, buffer, file.gcount(), 0);
         }
         file.close();
-        cout << " File sent successfully, please press the endsendfile to end this.\n";
+        cout << " File sent successfully, please enter the 'exit' to end this.\n";
         
     }

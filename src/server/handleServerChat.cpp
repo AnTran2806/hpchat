@@ -4,7 +4,7 @@ void Server::handleServerChat(int clientSocket, const string &clientName)
 {
     // Display a message indicating that the client wants to chat with the server
     string clientNameMessage = "\033[1;34m" + clientName + "\033[0m";
-    cout << clientNameMessage << " wants to chat with the server." << endl;
+    // cout << clientNameMessage << " wants to chat with the you." << endl;
 
     // Loop for handling server chat
     string privateClientMessage;
@@ -24,7 +24,7 @@ void Server::handleServerChat(int clientSocket, const string &clientName)
         timeout.tv_usec = 0;
 
         int ready = select(max(STDIN_FILENO, clientSocket) + 1, &readSet, NULL, NULL, &timeout);
-        string exitNotification = "\033[1;32mYou exited the private chat with SERVER\033[0m";
+        string exitNotification = "\033[1;32m\n\t\tYou exited the private chat with SERVER\033[0m";
 
         if (ready > 0)
         {
@@ -42,7 +42,7 @@ void Server::handleServerChat(int clientSocket, const string &clientName)
                     privateClientMessage = string(buffer, 0, bytesReceived);
                     if (privateClientMessage.compare(0, 4, "exit") == 0)
                     {
-                        cout << "\033[1;32mYou exited the private chat with SERVER\033[0m" << endl;
+                        cout <<clientName<< "\033[1;32m exited the private chat with You\033[0m" << endl;
                         send(clientSocket, exitNotification.c_str(), exitNotification.size() + 1, 0);
                         break;
                     }
@@ -55,7 +55,7 @@ void Server::handleServerChat(int clientSocket, const string &clientName)
                 getline(cin, userInput);
                 if (userInput.compare(0, 4, "exit") == 0)
                 {
-                    cout << "\033[1;32mYou exited the private chat with SERVER\033[0m" << endl;
+                    cout << "\033[1;32m\n\t\tYou exited the private chat with SERVER\033[0m" << endl;
                     send(clientSocket, exitNotification.c_str(), exitNotification.size() + 1, 0);
                     break;
                 }
