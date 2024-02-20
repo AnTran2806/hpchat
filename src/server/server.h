@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const int PORT = 4444;
+const int PORT = 54000;
 const int BUFFER_SIZE = 1024;
 const int MAX_CLIENTS = 10;
 
@@ -86,6 +86,7 @@ public:
     void handleGroupMessage(const string& clientName, const string& roomName, const string& receivedMessage, int clientSocket);
 
     void handleClientOffline(int clientSocket, const string &clientName);
+    vector<pair<int,string>> checkRoomIDs;
 
 private:
     int serverSocket;
@@ -97,6 +98,7 @@ private:
     UserAuthentication auth;
     vector<int> clientSockets;
     fd_set readfds;
+    
 
     unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
 

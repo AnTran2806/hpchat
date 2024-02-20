@@ -10,13 +10,13 @@ void Server::handleAuthentication(int clientSocket, const string& option)
         if (option == "A")
         {
             // Register
-            cout<<"Client is registering."<<endl;
+            //cout<<"Client is registering."<<endl;
             check = handleRegistration(clientSocket);
         }
         else if (option == "B")
         {
             // Login
-            cout<<"Client has logged in."<<endl;
+            //cout<<"Client has logged in."<<endl;
             check = handleLogin(clientSocket);
         }
     }

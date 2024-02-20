@@ -11,7 +11,7 @@ void Server::handleFileTransfer(int clientSocket, const string& clientName) {
         return;
     }
    string receiverName = string(buffer, 0, bytesReceived);
-    //std::cout << "Receiver's name: " << receiverName << std::endl;
+    cout << "Receiver's name: " << receiverName << std::endl;
 
     // Send the command "sendfile" to the receiver
     bool receiverFound = false;

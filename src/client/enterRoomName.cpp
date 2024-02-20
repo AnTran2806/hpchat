@@ -2,7 +2,7 @@
 
 void Client::enterRoomName(){
     string roomName;
-    cout << "Enter the ID or RoomName: ";
+    cout << "Enter the ID: ";
     getline(cin, roomName);
     sendToServer(roomName);
 }

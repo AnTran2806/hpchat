@@ -22,7 +22,6 @@ void Client::receiveFile() {
             return;
         }
 
-        // Nhận số byte của file
         int fileSize;
         recv(sock, reinterpret_cast<char*>(&fileSize), sizeof(fileSize), 0);
 
