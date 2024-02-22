@@ -20,7 +20,6 @@
 using namespace std;
 
 const int PORT = 54000;
-const string IP_SERVER = "10.188.9.30";
 
 class Client {
 private:

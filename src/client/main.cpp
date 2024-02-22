@@ -2,13 +2,19 @@
 
 int main() {
     Client client;
-
-    if (client.connectToServer(IP_SERVER, PORT)) {
-        client.handleUserInteraction();
-        client.startReceiving();
-        client.enterRoomName();
-        client.processFunction();
+    string IPOFSERVER; 
+    while (true) {
+        cout << "IP server: ";
+        getline(cin, IPOFSERVER);
+        if (client.connectToServer(IPOFSERVER, PORT)) {
+            client.handleUserInteraction();
+            client.startReceiving();
+            client.enterRoomName();
+            client.processFunction();
+            break; 
+        } else {
+            cout << "Please try again...\n";
+        }
     }
-
     return 0;
 }
