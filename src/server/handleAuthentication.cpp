@@ -19,6 +19,18 @@ void Server::handleAuthentication(int clientSocket, const string& option)
             //cout<<"Client has logged in."<<endl;
             check = handleLogin(clientSocket);
         }
+        else if (option == "C")
+        {
+            // Login
+            //cout<<"Client has logged in."<<endl;
+            check = handleLogin(clientSocket);
+        }
+        else if (option == "D")
+        {
+            // Login
+            //cout<<"Client has logged in."<<endl;
+            check = handleLogin(clientSocket);
+        }
     }
     // Detach the thread before proceeding
     thread processThread(&Server::processClient, this, clientSocket);
