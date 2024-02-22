@@ -7,7 +7,7 @@ void Client::handleUserInteraction() {
     cout << "\033[1;34mA:\033[0m";cout<< "Sign Up" << endl;
     cout << "\033[1;34mB:\033[0m";cout<<"Sign In" << endl;
 
-    // Sử dụng vòng lặp để yêu cầu người dùng nhập lại nếu lựa chọn không hợp lệ
+// Use a loop to ask the user to re-enter if the selection is invalid
     bool validOption = false;
     do {
         cout << "\033[1mYour Choice:\033[0m ";
@@ -22,7 +22,7 @@ void Client::handleUserInteraction() {
         }
     } while (!validOption);
 
-    // Sau khi có lựa chọn hợp lệ, gửi tới máy chủ và xử lý
+// After having a valid selection, send it to the server and process it
     sendToServer(option);
     bool success = false;
     do {
@@ -35,14 +35,14 @@ void Client::handleUserInteraction() {
                 read(sock, buffer, 1024);
                 cout << buffer << endl;
 
-                if (strcmp(buffer, "Registration successful.") == 0) {
-                    cout << "Please log in with your new credentials." << endl;
+                if (strcmp(buffer, "Registration successful. Please log in with your new credentials.") == 0) {
                     registrationSuccess = true;
                     option = "B"; // Set option to "B" for login
-                } else {
-                    // If registration was not successful, handle it accordingly.
-                    cout << "Registration failed. Please try again." << endl;
-                }
+                } 
+                // else {
+                //     If registration was not successful, handle it accordingly.
+                //     cout << "Registration failed. Please try again." << endl;
+                // }
             } while (!registrationSuccess);
         } else if (option == "B") {
             cout << "\t\033[3mSign In\033[0m" << endl;

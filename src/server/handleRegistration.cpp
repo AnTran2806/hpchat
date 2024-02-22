@@ -16,13 +16,13 @@ bool Server::handleRegistration(int clientSocket)
     const char *response;
     if (status)
     {
-        response = "Registration successful.";
+        response = "Registration successful. Please log in with your new credentials.";
         send(clientSocket, response, strlen(response), 0);
         handleLogin(clientSocket);
     }
     else
     {
-        response = "Username already exists. Choose a different username.";
+        response = "Username already exists. Choose a different username.\nPlease try again.";
         send(clientSocket, response, strlen(response), 0);
 
     }
