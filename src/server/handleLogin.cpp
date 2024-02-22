@@ -22,7 +22,7 @@ bool Server::handleLogin(int clientSocket)
     string password(passwordBuffer);
     bool status = auth.isLoggedIn(username, password);
 
-    const char *response = status ? "Login successful." : "Login failed.";
+    const char *response = status ? "Login successful." : "Login failed.\nPlease try again.";
     if(strcmp(response, "Login successful.") == 0){
         cout <<username << " signed successful at IP address " << "\033[1;32m" << clientIP << "\033[0m"<<endl; 
     } 
