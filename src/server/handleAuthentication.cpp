@@ -23,7 +23,7 @@ void Server::handleAuthentication(int clientSocket, const string& option)
         {
             // Login
             //cout<<"Client has logged in."<<endl;
-            check = handleLogin(clientSocket);
+            check = handleChangePassword(clientSocket);
         }
         else if (option == "D")
         {

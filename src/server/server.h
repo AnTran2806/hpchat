@@ -43,6 +43,9 @@ public:
     bool registerUser(const string &enteredUsername, const string &enteredPassword);
 
     bool isLoggedIn(const string &enteredUsername, const string &enteredPassword);
+
+    bool changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword);
+
 };
 
 class Client {
@@ -102,9 +105,9 @@ private:
 
     unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
 
-
     bool handleRegistration(int clientSocket);
     bool handleLogin(int clientSocket);
+    bool handleChangePassword(int clientSocket);
     void handleAuthentication(int clientSocket, const string& option);
 
     void processClient(int clientSocket);
