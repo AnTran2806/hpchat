@@ -59,3 +59,99 @@ bool UserAuthentication::isLoggedIn(const string& enteredUsername, const string&
     }
     return false;
 }
+
+// bool UserAuthentication::changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword) {
+//     string storedUsername, storedPassword;
+
+//     // Open the input/output file to read and write user data
+//     fstream file("data\\users.txt", ios::in | ios::out);
+//     if (!file.is_open()) {
+//         cerr << "Error: Unable to open file" << endl;
+//         return false;
+//     }
+
+//     // Flag to check if the password is changed
+//     bool passwordChanged = false;
+
+//     while (getline(file, storedUsername)) {
+//         getline(file, storedPassword);
+
+//         // cout << "Username: " << storedUsername << " | Old Password: " << oldPassword << " | Stored Password: " << storedPassword << endl;
+//         cout << "Old Pwd" << oldPassword << endl;
+//         // Check if the current line contains the username and old password
+//         if (storedUsername == enteredUsername && storedPassword == oldPassword) {
+//             // Update the password directly in the file
+//             streampos pos = file.tellg(); // Get the position after reading storedPassword
+//             file.seekp(pos - static_cast<ios::off_type>(storedPassword.length()) - static_cast<ios::off_type>(1)); // Move the cursor back to the start of the storedPassword
+//             file << newPassword; // Overwrite the old password
+//             file.seekg(pos); // Move the cursor back to the end of the current line
+
+//             passwordChanged = true;
+//             break;
+//         }
+//     }
+
+//     // Close the file
+//     file.close();
+
+//     if (passwordChanged) {
+//         cout << "Password changed successfully" << endl;
+//         return true;
+//     } else {
+//         cerr << "Error: Username or old password not found" << endl;
+//         return false;
+//     }
+// }
+
+
+
+bool UserAuthentication::changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword) {
+    string storedUsername, storedPassword;
+
+    // Open the input/output file to read and write user data
+    fstream file("data\\users.txt", ios::in | ios::out);
+    if (!file.is_open()) {
+        cerr << "Error: Unable to open file" << endl;
+        return false;
+    }
+
+    // Flag to check if the password is changed
+    bool passwordChanged = false;
+
+    while (getline(file, storedUsername)) {
+        getline(file, storedPassword);
+
+
+        // Check if the current line contains the username and old password
+        if (storedUsername == enteredUsername && storedPassword == oldPassword) {
+            // Check if the new password is different from the old password
+            if (newPassword != oldPassword) {
+                // Update the password directly in the file
+                streampos pos = file.tellg(); // Get the position after reading storedPassword
+                file.seekp(pos - static_cast<ios::off_type>(storedPassword.length()) - static_cast<ios::off_type>(1)); // Move the cursor back to the start of the storedPassword
+                file << newPassword; // Overwrite the old password
+                file.seekg(pos); // Move the cursor back to the end of the current line
+
+                passwordChanged = true;
+            } else {
+                // cerr << "Error: New password is the same as the old password" << endl;
+            }
+
+            break;
+        }
+    }
+
+    // Close the file
+    file.close();
+
+    if (passwordChanged) {
+        // cout << "Password changed successfully" << endl;
+        return true;
+    } else {
+        // cerr << "Error: Username or old password not found" << endl;
+        return false;
+    }
+}
+
+
+

@@ -66,8 +66,37 @@ void Client::handleUserInteraction() {
             read(sock, buffer, 1024);
             cout << buffer << endl;
 
-            if (strcmp(buffer, "Login successful.") != 0) {
-            } else {
+             if (strcmp(buffer, "Login successful.") == 0) {
+                bool passwordChangeSuccess = false;
+
+                do {
+                    cout << endl;
+                    char oldPassword[1024];
+
+                    cout << "\033[1mEnter Your Old Password:\033[0m ";
+                    cin.getline(oldPassword, sizeof(oldPassword));
+                    send(sock, oldPassword, strlen(oldPassword), 0);
+                    
+                    char newPassword[1024];
+
+                    cout << "\033[1mEnter New Password:\033[0m ";
+                    cin.getline(newPassword, sizeof(newPassword));
+                    send(sock, newPassword, strlen(newPassword), 0);
+                    cout << endl;
+
+                    char buffer[1024] = {0};
+                    read(sock, buffer, 1024);
+                    cout << buffer << endl;
+
+                    if (strcmp(buffer, "\033[1;32mPassword changed successfully.\033[0m") == 0) {
+                        passwordChangeSuccess = true;
+                    } else {
+                        // cout << "\033[1;31mPassword change failed. Please try again.\033[0m\n";
+                        // read(sock, buffer, 1024);
+                        // cout << buffer << endl;
+                    }
+                } while (!passwordChangeSuccess);
+
                 success = true;
             }
         }else if (option == "D") {
