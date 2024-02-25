@@ -46,6 +46,8 @@ public:
 
     bool changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword);
 
+    bool deleteAccount(const string& enteredUsername, const string& retypePassword);
+
 };
 
 class Client {
@@ -95,6 +97,7 @@ private:
     int serverSocket;
     int clientSocket;
     int maxSocket;
+    int PORT;
     sockaddr_in serverAddr;
     vector<Client> clients;
     mutex clientsMutex;
@@ -108,6 +111,7 @@ private:
     bool handleRegistration(int clientSocket);
     bool handleLogin(int clientSocket);
     bool handleChangePassword(int clientSocket);
+    bool handleDeleteAccount(int clientSocket);
     void handleAuthentication(int clientSocket, const string& option);
 
     void processClient(int clientSocket);

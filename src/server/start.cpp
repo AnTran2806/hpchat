@@ -14,6 +14,14 @@ void Server::start(int port)
     serverAddr.sin_port = htons(port);
     inet_pton(AF_INET, "0.0.0.0", &serverAddr.sin_addr);
 
+    // Add the following code for socket reuse
+    int reuse = 1;
+    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
+        cerr << "Error setting socket option SO_REUSEADDR" << endl;
+        close(serverSocket);
+        return;
+    }
+
     if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1)
     {
         cerr << "Unable to bind socket." << endl;

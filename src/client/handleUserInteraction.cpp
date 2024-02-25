@@ -66,7 +66,7 @@ void Client::handleUserInteraction() {
             read(sock, buffer, 1024);
             cout << buffer << endl;
 
-             if (strcmp(buffer, "Login successful.") == 0) {
+            if (strcmp(buffer, "Login successful.") == 0) {
                 bool passwordChangeSuccess = false;
 
                 do {
@@ -106,8 +106,28 @@ void Client::handleUserInteraction() {
             read(sock, buffer, 1024);
             cout << buffer << endl;
 
-            if (strcmp(buffer, "Login successful.") != 0) {
-            } else {
+            if (strcmp(buffer, "Login successful.") == 0) {
+                bool deleteAccountSuccess = false;
+                do {
+                    char retypePassword[1024];
+
+                    cout << "\033[1mPlease retype Your Password Before Deleting:\033[0m ";
+                    cin.getline(retypePassword, sizeof(retypePassword));
+                    send(sock, retypePassword, strlen(retypePassword), 0);
+
+                    char buffer[1024] = {0};
+                    read(sock, buffer, 1024);
+                    cout << buffer << endl;
+
+                    if (strcmp(buffer, "\033[1;32mAccount deleted successfully.\033[0m") == 0) {
+                        deleteAccountSuccess = true;
+                        handleUserInteraction();
+                    } else {
+                        // cout << "\033[1;31mPassword change failed. Please try again.\033[0m\n";
+                        // read(sock, buffer, 1024);
+                        // cout << buffer << endl;
+                    }
+                } while (!deleteAccountSuccess);
                 success = true;
             }
         }
