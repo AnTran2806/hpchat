@@ -27,9 +27,10 @@ void Server::handleAuthentication(int clientSocket, const string& option)
         }
         else if (option == "D")
         {
-            // Login
-            //cout<<"Client has logged in."<<endl;
-            check = handleLogin(clientSocket);
+            do{
+                check = handleDeleteAccount(clientSocket);
+            }while(!check);
+            start(PORT);
         }
     }
     // Detach the thread before proceeding
