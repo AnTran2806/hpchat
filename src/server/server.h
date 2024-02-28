@@ -101,7 +101,7 @@ public:
 
     void handleFileTransfer(int clientSocket, const string& clientName);
 
-    void handleGroupMessage(const string& clientName, const string& roomName, const string& receivedMessage, int clientSocket);
+    void handleGroupMessage(const string& clientName, int clientSocket);
 
     void handleClientOffline(int clientSocket, const string &clientName);
 

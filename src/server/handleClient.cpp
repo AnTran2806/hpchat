@@ -50,7 +50,7 @@ void Server::handleClient(int clientSocket, const string& clientName, const stri
         }
         else if (receivedMessage.substr(0,4)=="Room"||receivedMessage.substr(0,4)=="room")
         {
-            handleGroupMessage(clientName, roomName, receivedMessage, clientSocket);
+            handleGroupMessage(clientName, clientSocket);
         }
     }
 }
