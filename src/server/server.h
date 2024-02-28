@@ -29,7 +29,8 @@ const int PORT = 55000;
 const int BUFFER_SIZE = 1024;
 const int MAX_CLIENTS = 10;
 
-class UserAuthentication {
+class UserAuthentication
+{
 private:
     string username;
     string password;
@@ -46,14 +47,10 @@ public:
     bool changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword);
 
     bool deleteAccount(const string& enteredUsername, const string& retypePassword);
+
 };
 
 class Client {
-private:
-    int socket;
-    string name;
-    string roomName;
-
 public:
     Client(int socket, const string& name, const string& roomName);
 
@@ -62,23 +59,14 @@ public:
     const string& getName() const;
 
     const string& getRoomName() const;
+
+private:
+    int socket;
+    string name;
+    string roomName;
 };
 
 class Server {
-private:
-    int serverSocket;
-    int clientSocket;
-    int maxSocket;
-    int PORT;
-    sockaddr_in serverAddr;
-    vector<Client> clients;
-    mutex clientsMutex;
-    UserAuthentication auth;
-    vector<int> clientSockets;
-    fd_set readfds;
-    unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
-    vector<pair<int,string>> checkRoomIDs;
-
 public:
     Server();
 
@@ -87,6 +75,8 @@ public:
     void sendPrivateMessage(const string& senderName, const string& receiverName, const string& message);
 
     void start(int port);
+
+    void printColoredIP(const char* ipAddress);
 
     string trim(const string& str);
 
@@ -101,19 +91,30 @@ public:
     void handleGroupMessage(const string& clientName, const string& roomName, const string& receivedMessage, int clientSocket);
 
     void handleClientOffline(int clientSocket, const string &clientName);
+    vector<pair<int,string>> checkRoomIDs;
+
+private:
+    int serverSocket;
+    int clientSocket;
+    int maxSocket;
+    int PORT;
+    sockaddr_in serverAddr;
+    vector<Client> clients;
+    mutex clientsMutex;
+    UserAuthentication auth;
+    vector<int> clientSockets;
+    fd_set readfds;
     
+
+    unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
+
     bool handleRegistration(int clientSocket);
-    
     bool handleLogin(int clientSocket);
-    
     bool handleChangePassword(int clientSocket);
-    
     bool handleDeleteAccount(int clientSocket);
-    
     void handleAuthentication(int clientSocket, const string& option);
 
     void processClient(int clientSocket);
-    
     void handleClient(int clientSocket, const string& clientName, const string& roomName);
 };
 
