@@ -1,6 +1,8 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+// class Connection;
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -66,6 +68,21 @@ private:
     string roomName;
 };
 
+class Connection{
+private:
+    class Server& server;
+    int serverSocket;
+    int clientSocket;    
+    int maxSocket;
+    sockaddr_in serverAddr;
+    vector<int> clientSockets;
+    fd_set readfds;
+
+public:
+    Connection(class Server& server);
+    void start(int port);
+};
+
 class Server {
 public:
     Server();
@@ -73,10 +90,6 @@ public:
     Client* findClientByName(const string& name);
 
     void sendPrivateMessage(const string& senderName, const string& receiverName, const string& message);
-
-    void start(int port);
-
-    void printColoredIP(const char* ipAddress);
 
     string trim(const string& str);
 
@@ -91,28 +104,21 @@ public:
     void handleGroupMessage(const string& clientName, const string& roomName, const string& receivedMessage, int clientSocket);
 
     void handleClientOffline(int clientSocket, const string &clientName);
-    vector<pair<int,string>> checkRoomIDs;
+
+    void handleAuthentication(int clientSocket, const string& option);
 
 private:
-    int serverSocket;
-    int clientSocket;
-    int maxSocket;
     int PORT;
-    sockaddr_in serverAddr;
     vector<Client> clients;
     mutex clientsMutex;
     UserAuthentication auth;
-    vector<int> clientSockets;
-    fd_set readfds;
-    
-
     unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
+    vector<pair<int,string>> checkRoomIDs;
 
     bool handleRegistration(int clientSocket);
     bool handleLogin(int clientSocket);
     bool handleChangePassword(int clientSocket);
     bool handleDeleteAccount(int clientSocket);
-    void handleAuthentication(int clientSocket, const string& option);
 
     void processClient(int clientSocket);
     void handleClient(int clientSocket, const string& clientName, const string& roomName);

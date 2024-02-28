@@ -30,7 +30,8 @@ void Server::handleAuthentication(int clientSocket, const string& option)
             do{
                 check = handleDeleteAccount(clientSocket);
             }while(!check);
-            start(PORT);
+            // Continue to wait for new connections
+            return;
         }
     }
     // Detach the thread before proceeding

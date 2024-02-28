@@ -2,7 +2,6 @@
 
 void Server::handleClient(int clientSocket, const string& clientName, const string& roomName) 
 {
-    // ... (handleClient implementation)
     char buffer[4096];
     int bytesReceived;
     while (true) 
@@ -18,9 +17,7 @@ void Server::handleClient(int clientSocket, const string& clientName, const stri
         // Check the user that want to send the privare Message
         if (receivedMessage.size() > 3 && receivedMessage.substr(0, 3) == "/pm") 
         {
-            
             handlePrivateMessage(clientSocket, clientName, roomName, receivedMessage);
-
         } 
 
         else if (receivedMessage.size() > 3 && receivedMessage.substr(0, 3) == "/sv")
@@ -34,31 +31,22 @@ void Server::handleClient(int clientSocket, const string& clientName, const stri
                 send(clientSocket,Noti.c_str(),Noti.size()+1,0);
             }
             handleServerChat(clientSocket, clientName);
-
+        
         }
-            
         else if(receivedMessage.substr(0, 9) == "sendfile") {
             handleFileTransfer(clientSocket, clientName);
         }
         else if (receivedMessage.substr(0,3)=="P2P"){
-            cout<<"Reeceive the request to chat P2P\n";
             string p2pName = receivedMessage.substr(4);
-            cout<<p2pName<<"\n";
+            cout<<"Reeceived the request to chat P2P from "<<clientName <<" to "<<p2pName<<endl;
             bytesReceived =recv(clientSocket,buffer,4096,0);
             string IPClient1(buffer,0,bytesReceived);
-           //cout<<IPClient1<<" Ip of client chat 1-1\n";
-            for (auto& client:clients){
-                if (client.getName()==p2pName){
-                    send(client.getSocket(),"P2P",strlen("P2P")+1,0);
+           string clientNameAndIP = "\033[1;34m" + clientName + " wants to chat with you. IP: " + IPClient1 + "\033[0m\nPlease reply with 'Y' to accept or 'N' to wait:   ";
+           for (auto& client:clients){
+                if (client.getName()==p2pName&&clientSocket!=client.getSocket()){
+                    send(client.getSocket(),clientNameAndIP.c_str(),clientNameAndIP.size()+1,0);
                 }
             }
-            for (auto& client:clients){
-                if (client.getName()==p2pName){
-                    send(client.getSocket(),IPClient1.c_str(),IPClient1.size()+1,0);
-                    //cout<<IPClient1<<" sent 1-1\n";
-                }
-            }
-
         }
         else if (receivedMessage.substr(0,4)=="Room"||receivedMessage.substr(0,4)=="room")
         {
