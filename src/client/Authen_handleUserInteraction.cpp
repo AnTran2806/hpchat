@@ -1,6 +1,6 @@
 #include "client.h"
 
-void Client::handleUserInteraction() {
+void Authen::handleUserInteraction(int clientSocket) {
     string option;
 
     cout << "\t\033[1;34mWelcome to Chat Application!\033[0m" << endl;
@@ -25,45 +25,39 @@ void Client::handleUserInteraction() {
     } while (!validOption);
 
 // After having a valid selection, send it to the server and process it
-    sendToServer(option);
+    sendToServer(clientSocket,option);
+
     bool success = false;
     do {
         if (option == "A") {
             bool registrationSuccess = false;
             do {
                 cout << "\t\033[3mSign Up\033[0m" << endl;
-                enterCredential();
+                enterCredential(clientSocket);
                 char buffer[1024] = {0};
-                read(sock, buffer, 1024);
+                read(clientSocket, buffer, 1024);
                 cout << buffer << endl;
 
                 if (strcmp(buffer, "Registration successful. Please log in with your new credentials.") == 0) {
                     registrationSuccess = true;
                     option = "B"; // Set option to "B" for login
                 } 
-                // else {
-                //     If registration was not successful, handle it accordingly.
-                //     cout << "Registration failed. Please try again." << endl;
-                // }
             } while (!registrationSuccess);
         } else if (option == "B") {
             cout << "\t\033[3mSign In\033[0m" << endl;
-            enterCredential();
+            enterCredential(clientSocket);
             char buffer[1024] = {0};
-            read(sock, buffer, 1024);
+            read(clientSocket, buffer, 1024);
             cout << buffer << endl;
 
-            if (strcmp(buffer, "Login successful.") != 0) {
-            } else {
-                // Login was successful.
-                //cout << "Operation successful." << endl;
+            if (strcmp(buffer, "Login successful.") == 0) {
                 success = true;
             }
         }else if (option == "C") {
             cout << "\t\033[3mSign In\033[0m" << endl;
-            enterCredential();
+            enterCredential(clientSocket);
             char buffer[1024] = {0};
-            read(sock, buffer, 1024);
+            read(clientSocket, buffer, 1024);
             cout << buffer << endl;
 
             if (strcmp(buffer, "Login successful.") == 0) {
@@ -75,35 +69,31 @@ void Client::handleUserInteraction() {
 
                     cout << "\033[1mEnter Your Old Password:\033[0m ";
                     cin.getline(oldPassword, sizeof(oldPassword));
-                    send(sock, oldPassword, strlen(oldPassword), 0);
+                    send(clientSocket, oldPassword, strlen(oldPassword), 0);
                     
                     char newPassword[1024];
 
                     cout << "\033[1mEnter New Password:\033[0m ";
                     cin.getline(newPassword, sizeof(newPassword));
-                    send(sock, newPassword, strlen(newPassword), 0);
+                    send(clientSocket, newPassword, strlen(newPassword), 0);
                     cout << endl;
 
                     char buffer[1024] = {0};
-                    read(sock, buffer, 1024);
+                    read(clientSocket, buffer, 1024);
                     cout << buffer << endl;
 
                     if (strcmp(buffer, "\033[1;32mPassword changed successfully.\033[0m") == 0) {
                         passwordChangeSuccess = true;
-                    } else {
-                        // cout << "\033[1;31mPassword change failed. Please try again.\033[0m\n";
-                        // read(sock, buffer, 1024);
-                        // cout << buffer << endl;
-                    }
+                    } 
                 } while (!passwordChangeSuccess);
 
                 success = true;
             }
         }else if (option == "D") {
             cout << "\t\033[3mSign In\033[0m" << endl;
-            enterCredential();
+            enterCredential(clientSocket);
             char buffer[1024] = {0};
-            read(sock, buffer, 1024);
+            read(clientSocket, buffer, 1024);
             cout << buffer << endl;
 
             if (strcmp(buffer, "Login successful.") == 0) {
@@ -113,20 +103,16 @@ void Client::handleUserInteraction() {
 
                     cout << "\033[1mPlease retype Your Password Before Deleting:\033[0m ";
                     cin.getline(retypePassword, sizeof(retypePassword));
-                    send(sock, retypePassword, strlen(retypePassword), 0);
+                    send(clientSocket, retypePassword, strlen(retypePassword), 0);
 
                     char buffer[1024] = {0};
-                    read(sock, buffer, 1024);
+                    read(clientSocket, buffer, 1024);
                     cout << buffer << endl;
 
                     if (strcmp(buffer, "\033[1;32mAccount deleted successfully.\033[0m") == 0) {
                         deleteAccountSuccess = true;
-                        handleUserInteraction();
-                    } else {
-                        // cout << "\033[1;31mPassword change failed. Please try again.\033[0m\n";
-                        // read(sock, buffer, 1024);
-                        // cout << buffer << endl;
-                    }
+                        handleUserInteraction(clientSocket);
+                    } 
                 } while (!deleteAccountSuccess);
                 success = true;
             }

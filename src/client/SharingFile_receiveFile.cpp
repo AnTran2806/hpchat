@@ -1,15 +1,15 @@
 #include "client.h"
 
-void Client::receiveFile() {
+void SharingFile::receiveFile(int clientSocket) {
         char filename[256];
-        read(sock, filename, sizeof(filename));
+        read(clientSocket, filename, sizeof(filename));
         cout << "File Name: " << filename << endl;
 
         // Create the time to receive the file
         time_t currentTime = time(nullptr);
         tm* localTime = localtime(&currentTime);
         char timeBuffer[32];
-        strftime(timeBuffer, sizeof(timeBuffer), "%Y%m%d%H%M%S", localTime);
+        strftime(timeBuffer, sizeof(timeBuffer), "%d%H%M%S", localTime);
 
         // instert the time with the file name
         string newFilename = string(timeBuffer) + "_" + string(filename);
@@ -23,15 +23,15 @@ void Client::receiveFile() {
         }
 
         int fileSize;
-        recv(sock, reinterpret_cast<char*>(&fileSize), sizeof(fileSize), 0);
+        recv(clientSocket, reinterpret_cast<char*>(&fileSize), sizeof(fileSize), 0);
 
         char buffer[4096];
         int totalReceived = 0;
         while (totalReceived < fileSize) {
-            int bytesReceived = recv(sock, buffer, sizeof(buffer), 0);
+            int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
             if (bytesReceived <= 0) {
                 cerr << "Error: Server is down" << endl;
-                close(sock);
+                close(clientSocket);
                 return;
             }
             if (strcmp(buffer,"exit")==0){
@@ -43,4 +43,4 @@ void Client::receiveFile() {
 
         file.close();
         cout << "File received successfully: " << newFilename << endl;
-    }
+}
