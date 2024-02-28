@@ -1,7 +1,6 @@
 #include "client.h"
 
-
-string AgetIPAddress() {
+string Client:: getIPAddress() {
     struct ifaddrs *addrs, *tmp;
     getifaddrs(&addrs);
     tmp = addrs;
