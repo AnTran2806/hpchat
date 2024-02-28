@@ -1,9 +1,6 @@
 #include "server.h"
 
-void Server::handleGroupMessage(const string &clientName, 
-                                const string &roomName, 
-                                const string &receivedMessage, 
-                                int clientSocket)
+void Server::handleGroupMessage(const string &clientName,  int clientSocket)
 {
    
     char buffer[4096];
