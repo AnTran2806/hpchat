@@ -82,10 +82,8 @@ bool UserAuthentication::changePassword(const string& enteredUsername, const str
             // Check if the new password is different from the old password
             if (newPassword != oldPassword) {
                 // Update the password directly in the file
-                streampos pos = file.tellg(); // Get the position after reading storedPassword
-                file.seekp(pos - static_cast<ios::off_type>(storedPassword.length()) - static_cast<ios::off_type>(1)); // Move the cursor back to the start of the storedPassword
-                file << newPassword; // Overwrite the old password
-                file.seekg(pos); // Move the cursor back to the end of the current line
+                file.seekp(file.tellg());  // Move the write cursor to the current position
+                file << enteredUsername << std::endl << newPassword << std::endl;
 
                 passwordChanged = true;
             } else {
