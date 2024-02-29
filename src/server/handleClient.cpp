@@ -34,7 +34,7 @@ void Server::handleClient(int clientSocket, const string& clientName, const stri
         
         }
         else if(receivedMessage.substr(0, 9) == "sendfile") {
-            handleFileTransfer(clientSocket, clientName);
+            handleFileTransfer(clientSocket, clientName,"R1");
         }
         else if (receivedMessage.substr(0,3)=="P2P"){
             string p2pName = receivedMessage.substr(4);
