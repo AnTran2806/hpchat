@@ -13,10 +13,6 @@ void Client::processFunction() {
 
         if (userInput == "sendfile") {
             sendToServer(sock, "sendfile");
-            string nameOrRoom;
-            cout << "Enter the receiver name: ";
-            getline(cin, nameOrRoom);
-            sendToServer(sock, nameOrRoom);
             sharingFile1.sendFile(sock);
         }
         else if (userInput == "P2P") {

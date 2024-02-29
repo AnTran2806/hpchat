@@ -99,7 +99,7 @@ public:
 
     void handleServerChat(int clientSocket, const string &clientName);
 
-    void handleFileTransfer(int clientSocket, const string& clientName);
+    void handleFileTransfer(int clientSocket, string clientName,string roomID);
 
     void handleGroupMessage(const string& clientName, int clientSocket);
 
