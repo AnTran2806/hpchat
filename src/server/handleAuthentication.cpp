@@ -1,6 +1,6 @@
 #include "server.h"
 
-void Server::handleAuthentication(int clientSocket, const string& option)
+void UserAuthentication::handleAuthentication(int clientSocket, const string& option)
 {
     bool check = false;
     string username;
@@ -11,30 +11,30 @@ void Server::handleAuthentication(int clientSocket, const string& option)
         {
             // Register
             //cout<<"Client is registering."<<endl;
-            check = handleRegistration(clientSocket);
+            check = server->handleRegistration(clientSocket);
         }
         else if (option == "B")
         {
             // Login
             //cout<<"Client has logged in."<<endl;
-            check = handleLogin(clientSocket);
+            check = server->handleLogin(clientSocket);
         }
         else if (option == "C")
         {
             // Login
             //cout<<"Client has logged in."<<endl;
-            check = handleChangePassword(clientSocket);
+            check = server->handleChangePassword(clientSocket);
         }
         else if (option == "D")
         {
             do{
-                check = handleDeleteAccount(clientSocket);
+                check = server->handleDeleteAccount(clientSocket);
             }while(!check);
             // Continue to wait for new connections
             return;
         }
     }
     // Detach the thread before proceeding
-    thread processThread(&Server::processClient, this, clientSocket);
+    thread processThread(&Server::processClient, server, clientSocket);
     processThread.join();
 }    
