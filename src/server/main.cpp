@@ -2,8 +2,10 @@
 
 int main() {
     Server server;
-    Connection connection(server); // Pass the Server object to the Connection constructor
+    UserAuthentication auth(&server);
+    Connection connection(auth);
     connection.start(PORT);
+
     
     return 0;
 }

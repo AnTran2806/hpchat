@@ -1,6 +1,6 @@
 #include "server.h"
 
-UserAuthentication::UserAuthentication() : username(""), password("") {}
+UserAuthentication::UserAuthentication(Server* server) : server(server), username(""), password("") {}
 
 bool UserAuthentication::isUserRegistered(const string& checkUsername) 
 {

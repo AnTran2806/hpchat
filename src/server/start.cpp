@@ -1,6 +1,7 @@
 #include "server.h"
 
-Connection::Connection(class Server& server) : server(server) {}
+// Connection::Connection(class Server& server) : server(server) {}
+Connection::Connection(class UserAuthentication& auth) : auth(auth) {}
 
 void Connection::start(int port)  {
     //create server socket
@@ -62,7 +63,7 @@ void Connection::start(int port)  {
         string option(buffer, 0, bytesReceived);
 
         // Goto the handleAuthentication
-        thread authenThread(&Server::handleAuthentication, &server, newClientSocket, option);
+        thread authenThread(&UserAuthentication::handleAuthentication, &auth, newClientSocket, option);
         authenThread.detach();
     }
 }

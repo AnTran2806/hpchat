@@ -34,11 +34,13 @@ const int MAX_CLIENTS = 10;
 class UserAuthentication
 {
 private:
+    class Server* server;
     string username;
     string password;
 
 public:
-    UserAuthentication();
+    UserAuthentication();  
+    UserAuthentication(class Server* server);
 
     bool isUserRegistered(const string &checkUsername);
 
@@ -49,6 +51,8 @@ public:
     bool changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword);
 
     bool deleteAccount(const string& enteredUsername, const string& retypePassword);
+    
+    void handleAuthentication(int clientSocket, const string& option);
 
 };
 
@@ -70,7 +74,8 @@ private:
 
 class Connection{
 private:
-    class Server& server;
+    // class Server& server;
+    class UserAuthentication& auth;
     int serverSocket;
     int clientSocket;    
     int maxSocket;
@@ -79,7 +84,8 @@ private:
     fd_set readfds;
 
 public:
-    Connection(class Server& server);
+    // Connection(class Server& server);
+    Connection(class UserAuthentication& auth);
     void start(int port);
 };
 
@@ -105,8 +111,13 @@ public:
 
     void handleClientOffline(int clientSocket, const string &clientName);
 
-    void handleAuthentication(int clientSocket, const string& option);
+    bool handleRegistration(int clientSocket);
+    bool handleLogin(int clientSocket);
+    bool handleChangePassword(int clientSocket);
+    bool handleDeleteAccount(int clientSocket);
 
+    void processClient(int clientSocket);
+    void handleClient(int clientSocket, const string& clientName, const string& roomName);
 private:
     int PORT;
     vector<Client> clients;
@@ -115,13 +126,7 @@ private:
     unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
     vector<pair<int,string>> checkRoomIDs;
 
-    bool handleRegistration(int clientSocket);
-    bool handleLogin(int clientSocket);
-    bool handleChangePassword(int clientSocket);
-    bool handleDeleteAccount(int clientSocket);
 
-    void processClient(int clientSocket);
-    void handleClient(int clientSocket, const string& clientName, const string& roomName);
 };
 
 #endif // SERVER_H

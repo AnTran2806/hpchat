@@ -14,8 +14,9 @@ const string& Client::getRoomName() const {
     return roomName;
 }
 
-Server::Server(){}
-
+// Server::Server(class UserAuthentication& auth) : auth(auth) {}
+Server::Server() {}
+UserAuthentication::UserAuthentication(){}
 string Server::trim(const string& str) {
     // ... (trim implementation)
     size_t first = str.find_first_not_of(" \t\n\r");
