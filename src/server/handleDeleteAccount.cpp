@@ -1,6 +1,6 @@
 #include "server.h"
 
-bool Server::handleDeleteAccount(int clientSocket)
+bool UserAuthentication::handleDeleteAccount(int clientSocket)
 {
     if (!handleLogin(clientSocket))
     {
@@ -16,7 +16,7 @@ bool Server::handleDeleteAccount(int clientSocket)
         recv(clientSocket, retypePasswordBuffer, sizeof(retypePasswordBuffer), 0);
         string retypePassword(retypePasswordBuffer);
 
-        deleteAccountSuccess = auth.deleteAccount(enteredUsername, retypePassword);
+        deleteAccountSuccess = deleteAccount(enteredUsername, retypePassword);
 
         // If account deletion is successful, remove the username from loggedInUsers
         if (deleteAccountSuccess) {

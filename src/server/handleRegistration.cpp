@@ -1,6 +1,6 @@
 #include "server.h"
 
-bool Server::handleRegistration(int clientSocket)
+bool UserAuthentication::handleRegistration(int clientSocket)
 {
     char usernameBuffer[1024] = {0};
     char passwordBuffer[1024] = {0};
@@ -11,8 +11,8 @@ bool Server::handleRegistration(int clientSocket)
     string username(usernameBuffer);
     string password(passwordBuffer);
 
-    bool status = auth.isUserRegistered(username);
-    status = !status && auth.registerUser(username, password);
+    bool status = isUserRegistered(username);
+    status = !status && registerUser(username, password);
     const char *response;
     if (status)
     {

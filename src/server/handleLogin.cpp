@@ -1,6 +1,6 @@
 #include "server.h"
 
-bool Server::handleLogin(int clientSocket)
+bool UserAuthentication::handleLogin(int clientSocket, class Server* server)
 {
     sockaddr_in clientAddr;
     socklen_t addrLen = sizeof(clientAddr);
@@ -20,7 +20,7 @@ bool Server::handleLogin(int clientSocket)
 
     string username(usernameBuffer);
     string password(passwordBuffer);
-    bool status = auth.isLoggedIn(username, password);
+    bool status = isLoggedIn(username, password);
 
     const char *response = status ? "Login successful." : "Login failed.\nPlease try again.";
     if(strcmp(response, "Login successful.") == 0){
@@ -31,6 +31,8 @@ bool Server::handleLogin(int clientSocket)
 
     // After confirming successful login, save the username to the list
     loggedInUsers[clientSocket] = username;
+    server->setLoggedInUsers(loggedInUsers);
+    cout <<"loggedInUsers[clientSocket]: " << loggedInUsers[clientSocket] << endl;
 
     return status;
 }

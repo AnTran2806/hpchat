@@ -10,6 +10,8 @@ void Server::processClient(int clientSocket)
     }
 
     // Check if the client is logged in
+    cout <<"clientsocket: " << clientSocket << endl;
+    cout <<"loggedInUsers[clientSocket]: " << loggedInUsers[clientSocket] << endl;
     if (loggedInUsers.find(clientSocket) == loggedInUsers.end()) {
         cerr << "Error: Client not logged in. Closing connection." << endl;
         close(clientSocket);
@@ -17,6 +19,7 @@ void Server::processClient(int clientSocket)
     }
 
     string clientName = loggedInUsers[clientSocket];
+    cout << "Client name is " << clientName << endl;
 
     lock_guard<mutex> guard(clientsMutex);
     clients.push_back(Client(clientSocket, clientName, roomName)); // Pass the username
