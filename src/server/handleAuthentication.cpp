@@ -17,7 +17,7 @@ void UserAuthentication::handleAuthentication(int clientSocket, const string& op
         {
             // Login
             //cout<<"Client has logged in."<<endl;
-            check = handleLogin(clientSocket);
+            check = handleLogin(clientSocket, server);
         }
         else if (option == "C")
         {

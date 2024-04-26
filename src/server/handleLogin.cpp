@@ -32,7 +32,6 @@ bool UserAuthentication::handleLogin(int clientSocket, class Server* server)
     // After confirming successful login, save the username to the list
     loggedInUsers[clientSocket] = username;
     server->setLoggedInUsers(loggedInUsers);
-    cout <<"loggedInUsers[clientSocket]: " << loggedInUsers[clientSocket] << endl;
 
     return status;
 }

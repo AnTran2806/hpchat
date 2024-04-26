@@ -18,7 +18,7 @@ bool UserAuthentication::handleRegistration(int clientSocket)
     {
         response = "Registration successful. Please log in with your new credentials.";
         send(clientSocket, response, strlen(response), 0);
-        handleLogin(clientSocket);
+        handleLogin(clientSocket, server);
     }
     else
     {

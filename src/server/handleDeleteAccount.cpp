@@ -2,7 +2,7 @@
 
 bool UserAuthentication::handleDeleteAccount(int clientSocket)
 {
-    if (!handleLogin(clientSocket))
+    if (!handleLogin(clientSocket, server))
     {
         // If handleLogin fails, send a message to the client
         return false;
