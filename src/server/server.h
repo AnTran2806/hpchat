@@ -1,8 +1,6 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-// class Connection;
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -24,46 +22,13 @@
 #include <future>
 #include <unordered_map>
 #include <set>
+#include "userAuthentication.h"
 
 using namespace std;
 
 const int PORT = 55000;
 const int BUFFER_SIZE = 1024;
 const int MAX_CLIENTS = 10;
-
-class UserAuthentication
-{
-private:
-    class Server* server;
-    string username;
-    string password;
-
-public:
-    UserAuthentication();  
-    UserAuthentication(class Server* server);
-
-    unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
-
-    bool isUserRegistered(const string &checkUsername);
-
-    bool registerUser(const string &enteredUsername, const string &enteredPassword);
-
-    bool isLoggedIn(const string &enteredUsername, const string &enteredPassword);
-
-    bool changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword);
-
-    bool deleteAccount(const string& enteredUsername, const string& retypePassword);
-    
-    void handleAuthentication(int clientSocket, const string& option);
-
-    bool handleRegistration(int clientSocket);
-
-    bool handleLogin(int clientSocket, class Server* server);
-
-    bool handleChangePassword(int clientSocket);
-
-    bool handleDeleteAccount(int clientSocket);
-};
 
 class Client {
 public:
