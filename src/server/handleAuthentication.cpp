@@ -11,29 +11,30 @@ void UserAuthentication::handleAuthentication(int clientSocket, const string& op
         {
             // Register
             //cout<<"Client is registering."<<endl;
-            check = server->handleRegistration(clientSocket);
+            check = handleRegistration(clientSocket);
         }
         else if (option == "B")
         {
             // Login
             //cout<<"Client has logged in."<<endl;
-            check = server->handleLogin(clientSocket);
+            check = handleLogin(clientSocket, server);
         }
         else if (option == "C")
         {
             // Login
             //cout<<"Client has logged in."<<endl;
-            check = server->handleChangePassword(clientSocket);
+            check = handleChangePassword(clientSocket);
         }
         else if (option == "D")
         {
             do{
-                check = server->handleDeleteAccount(clientSocket);
+                check = handleDeleteAccount(clientSocket);
             }while(!check);
             // Continue to wait for new connections
             return;
         }
     }
+
     // Detach the thread before proceeding
     thread processThread(&Server::processClient, server, clientSocket);
     processThread.join();

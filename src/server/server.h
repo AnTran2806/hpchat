@@ -42,6 +42,8 @@ public:
     UserAuthentication();  
     UserAuthentication(class Server* server);
 
+    unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
+
     bool isUserRegistered(const string &checkUsername);
 
     bool registerUser(const string &enteredUsername, const string &enteredPassword);
@@ -54,6 +56,13 @@ public:
     
     void handleAuthentication(int clientSocket, const string& option);
 
+    bool handleRegistration(int clientSocket);
+
+    bool handleLogin(int clientSocket, class Server* server);
+
+    bool handleChangePassword(int clientSocket);
+
+    bool handleDeleteAccount(int clientSocket);
 };
 
 class Client {
@@ -111,22 +120,21 @@ public:
 
     void handleClientOffline(int clientSocket, const string &clientName);
 
-    bool handleRegistration(int clientSocket);
-    bool handleLogin(int clientSocket);
-    bool handleChangePassword(int clientSocket);
-    bool handleDeleteAccount(int clientSocket);
-
     void processClient(int clientSocket);
+    
     void handleClient(int clientSocket, const string& clientName, const string& roomName);
+
+    void setLoggedInUsers(unordered_map<int, string> loggedInUsers){
+        this->loggedInUsers = loggedInUsers;
+    }
+
 private:
     int PORT;
     vector<Client> clients;
     mutex clientsMutex;
+    unordered_map<int, string> loggedInUsers;
     UserAuthentication auth;
-    unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
     vector<pair<int,string>> checkRoomIDs;
-
-
 };
 
 #endif // SERVER_H

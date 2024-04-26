@@ -1,8 +1,8 @@
 #include "server.h"
 
-bool Server::handleChangePassword(int clientSocket)
+bool UserAuthentication::handleChangePassword(int clientSocket)
 {
-    if (!handleLogin(clientSocket))
+    if (!handleLogin(clientSocket, server))
     {
         // If handleLogin fails, send a message to the client
         return false;
@@ -25,7 +25,7 @@ bool Server::handleChangePassword(int clientSocket)
         string enteredUsername = loggedInUsers[clientSocket];
 
         // Call the changePassword function
-        passwordChangeSuccess = auth.changePassword(enteredUsername, oldPassword, newPassword);
+        passwordChangeSuccess = changePassword(enteredUsername, oldPassword, newPassword);
 
         // Send the response back to the client
         const char *changePasswordResponse = passwordChangeSuccess ? "\033[1;32mPassword changed successfully.\033[0m" : "\033[1;31mNew password is the same as the old password. Please try again.\033[0m\n";
