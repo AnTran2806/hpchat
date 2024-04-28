@@ -2,39 +2,39 @@ CXX=g++
 CFLAGS=-std=c++14 -Wall -Wextra -pthread
 OBJ_DIR=./obj
 
-# Find all .cpp files in ./src/server directory
-SRC_SERVER = $(shell find ./src/server -name "*.cpp")
-SRC_CLIENT = $(shell find ./src/client -name "*.cpp")
+# Find all .cpp files in ./src/ChatAppServer directory
+SRC_CHATAPPSERVER = $(shell find ./src/ChatAppServer -name "*.cpp")
+SRC_CHATAPPCLIENT = $(shell find ./src/ChatAppClient -name "*.cpp")
 
-# Replace .cpp with .o and place in ./obj/server directory
-OBJ_SERVER = $(patsubst ./src/server/%.cpp, $(OBJ_DIR)/server/%.o, $(SRC_SERVER))
-OBJ_CLIENT = $(patsubst ./src/client/%.cpp, $(OBJ_DIR)/client/%.o, $(SRC_CLIENT))
+# Replace .cpp with .o and place in ./obj/ChatAppServer directory
+OBJ_CHATAPPSERVER = $(patsubst ./src/ChatAppServer/%.cpp, $(OBJ_DIR)/ChatAppServer/%.o, $(SRC_CHATAPPSERVER))
+OBJ_CHATAPPCLIENT = $(patsubst ./src/ChatAppClient/%.cpp, $(OBJ_DIR)/ChatAppClient/%.o, $(SRC_CHATAPPCLIENT))
 
-# Rule to build both server and client executables
-all: server client
+# Rule to build both ChatAppServer and ChatAppClient executables
+all: ChatAppServer ChatAppClient
 
-server: $(OBJ_SERVER)
-	$(CXX) $(CFLAGS) -o server $(OBJ_SERVER)
+ChatAppServer: $(OBJ_CHATAPPSERVER)
+	$(CXX) $(CFLAGS) -o ChatAppServer $(OBJ_CHATAPPSERVER)
 
-client: $(OBJ_CLIENT)
-	$(CXX) $(CFLAGS) -o client $(OBJ_CLIENT)
+ChatAppClient: $(OBJ_CHATAPPCLIENT)
+	$(CXX) $(CFLAGS) -o ChatAppClient $(OBJ_CHATAPPCLIENT)
 
-# Rule to compile server source files into object files
-$(OBJ_DIR)/server/%.o: ./src/server/%.cpp
+# Rule to compile ChatAppServer source files into object files
+$(OBJ_DIR)/ChatAppServer/%.o: ./src/ChatAppServer/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
-# Rule to compile client source files into object files
-$(OBJ_DIR)/client/%.o: ./src/client/%.cpp
+# Rule to compile ChatAppClient source files into object files
+$(OBJ_DIR)/ChatAppClient/%.o: ./src/ChatAppClient/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
 # Rule to clean all compiled files and executables
-clean: clean-client clean-server
+clean: clean-ChatAppClient clean-ChatAppServer
 	rm -rf $(OBJ_DIR)
 
-clean-client:
-	rm -f ./client
+clean-ChatAppClient:
+	rm -f ./ChatAppClient
 
-clean-server:
-	rm -f ./server
+clean-ChatAppServer:
+	rm -f ./ChatAppServer
