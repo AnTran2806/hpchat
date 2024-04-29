@@ -72,9 +72,7 @@ public:
     
     void handleClient(int clientSocket, const string& clientName, const string& roomName);
 
-    void setLoggedInUsers(unordered_map<int, string> loggedInUsers){
-        this->loggedInUsers = loggedInUsers;
-    }
+    void setLoggedInUsers(unordered_map<int, string> loggedInUsers);
 
 private:
     int PORT;
