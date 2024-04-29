@@ -40,3 +40,7 @@ string Server::receiveString(int clientSocket) {
     }
     return string(buffer, 0, bytesReceived);
 }
+
+void Server::setLoggedInUsers(unordered_map<int, string> loggedInUsers){
+        this->loggedInUsers = loggedInUsers;
+}
