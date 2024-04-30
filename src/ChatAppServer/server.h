@@ -23,28 +23,13 @@
 #include <unordered_map>
 #include <set>
 #include "userAuthentication.h"
+#include "client.h"
 
 using namespace std;
 
 const int PORT = 55000;
 const int BUFFER_SIZE = 1024;
 const int MAX_CLIENTS = 10;
-
-class Client {
-public:
-    Client(int socket, const string& name, const string& roomName);
-
-    int getSocket() const;
-
-    const string& getName() const;
-
-    const string& getRoomName() const;
-
-private:
-    int socket;
-    string name;
-    string roomName;
-};
 
 class Server {
 public:
