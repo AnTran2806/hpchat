@@ -1,8 +1,9 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <string>
-using namespace std;
+// #include <string>
+// using namespace std;
+#include "../common/library.h"
 
 class Client {
 public:

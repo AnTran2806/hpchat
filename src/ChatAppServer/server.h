@@ -1,31 +1,11 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <thread>
-#include <mutex>
-#include <algorithm>
-#include <cstring>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <cctype>
-#include <chrono>
-#include <fstream>
-#include <map>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <sys/select.h>
-#include <sstream>
-#include <future>
-#include <unordered_map>
-#include <set>
+#include "../common/library.h"
 #include "userAuthentication.h"
 #include "client.h"
 
-using namespace std;
+// using namespace std;
 
 const int PORT = 55000;
 const int BUFFER_SIZE = 1024;

@@ -1,7 +1,10 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
-#include "server.h"
-using namespace std;
+
+#include "../common/library.h"
+
+// #include "server.h"
+// using namespace std;
 
 class Connection{
 private:
