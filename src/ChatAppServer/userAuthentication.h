@@ -1,10 +1,10 @@
 #ifndef USERAUTHENTICATION_H
 #define USERAUTHENTICATION_H
 
-#include <string>
-#include <unordered_map>
-
-using namespace std;
+// #include <string>
+// #include <unordered_map>
+// using namespace std;
+#include "../common/library.h"
 
 class Server;
 
