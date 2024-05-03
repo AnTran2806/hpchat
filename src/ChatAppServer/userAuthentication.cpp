@@ -83,7 +83,7 @@ bool UserAuthentication::changePassword(const string& enteredUsername, const str
             if (newPassword != oldPassword) {
                 // Update the password directly in the file
                 file.seekp(file.tellg());  // Move the write cursor to the current position
-                file << enteredUsername << std::endl << newPassword << std::endl;
+                file << enteredUsername << endl << newPassword << endl;
 
                 passwordChanged = true;
             } else {
@@ -106,24 +106,24 @@ bool UserAuthentication::changePassword(const string& enteredUsername, const str
     }
 }
 
-bool UserAuthentication::deleteAccount(const std::string& enteredUsername, const std::string& retypePassword) {
-    std::string storedUsername, storedPassword;
+bool UserAuthentication::deleteAccount(const string& enteredUsername, const string& retypePassword) {
+    string storedUsername, storedPassword;
 
     // Open the input/output file to read and write user data
-    std::fstream file("data\\users.txt", std::ios::in | std::ios::out);
+    fstream file("data\\users.txt", ios::in | ios::out);
     if (!file.is_open()) {
-        std::cerr << "Error: Unable to open file" << std::endl;
+        cerr << "Error: Unable to open file" << endl;
         return false;
     }
 
     // Get the current position in the file for later seeking
-    std::streampos currentPosition = file.tellg();
+    streampos currentPosition = file.tellg();
 
     // Flag to check if the account is deleted
     bool accountDeleted = false;
 
     // Create a stringstream to store the contents of the file
-    std::stringstream updatedContents;
+    stringstream updatedContents;
 
     while (getline(file, storedUsername)) {
         getline(file, storedPassword);
@@ -133,7 +133,7 @@ bool UserAuthentication::deleteAccount(const std::string& enteredUsername, const
             accountDeleted = true;
         } else {
             // Write data to the stringstream for all other usernames
-            updatedContents << storedUsername << std::endl << storedPassword << std::endl;
+            updatedContents << storedUsername << endl << storedPassword << endl;
         }
 
         // Check for the end of the file
@@ -148,7 +148,7 @@ bool UserAuthentication::deleteAccount(const std::string& enteredUsername, const
 
     // Truncate the file
     file.close();
-    file.open("data\\users.txt", std::ios::out | std::ios::trunc);
+    file.open("data\\users.txt", ios::out | ios::trunc);
 
     // Write the updated contents to the file
     file << updatedContents.str();
@@ -157,10 +157,10 @@ bool UserAuthentication::deleteAccount(const std::string& enteredUsername, const
     file.close();
 
     if (accountDeleted) {
-        std::cout << "Account deleted successfully" << std::endl;
+        cout << "Account deleted successfully" << endl;
         return true;
     } else {
-        std::cerr << "Error: Username or password not found" << std::endl;
+        cerr << "Error: Username or password not found" << endl;
         return false;
     }
 }
@@ -174,20 +174,14 @@ void UserAuthentication::handleAuthentication(int clientSocket, const string& op
         // char buffer[4096];
         if (option == "A")
         {
-            // Register
-            //cout<<"Client is registering."<<endl;
             check = handleRegistration(clientSocket);
         }
         else if (option == "B")
         {
-            // Login
-            //cout<<"Client has logged in."<<endl;
             check = handleLogin(clientSocket, server);
         }
         else if (option == "C")
         {
-            // Login
-            //cout<<"Client has logged in."<<endl;
             check = handleChangePassword(clientSocket);
         }
         else if (option == "D")
@@ -247,9 +241,6 @@ bool UserAuthentication::handleLogin(int clientSocket, class Server* server)
     char usernameBuffer[1024] = {0};
     char passwordBuffer[1024] = {0};
 
-    // read(clientSocket, usernameBuffer, 1024);
-    //cout << "Here is handleLogin Fucntion" << endl;
-    // read(clientSocket, passwordBuffer, 1024);
     recv(clientSocket, usernameBuffer, sizeof(usernameBuffer), 0);
     recv(clientSocket, passwordBuffer, sizeof(passwordBuffer), 0);
 
@@ -278,7 +269,6 @@ bool UserAuthentication::handleChangePassword(int clientSocket)
         // If handleLogin fails, send a message to the client
         return false;
     }    
-
 
     bool passwordChangeSuccess = false;
 

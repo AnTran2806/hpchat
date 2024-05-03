@@ -1,8 +1,5 @@
 #include "connection.h"
-#include "server.h"
-#include "userAuthentication.h"
 
-// Connection::Connection(class Server& server) : server(server) {}
 Connection::Connection(class UserAuthentication& auth) : auth(auth) {}
 
 void Connection::start(int port)  {

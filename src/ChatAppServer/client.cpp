@@ -1,8 +1,5 @@
 #include "client.h"
 
-#include <string>
-using namespace std;
-
 Client::Client(int socket, const string& name, const string& roomName) : socket(socket), name(name), roomName(roomName) {}
 
 int Client::getSocket() const {
