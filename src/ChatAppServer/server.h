@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "../common/library.h"
+#include "../common/ChatAppServer/library.h"
 #include "userAuthentication.h"
 #include "client.h"
 

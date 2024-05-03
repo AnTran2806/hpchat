@@ -1,23 +1,8 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <iostream>
-#include <thread>
-#include <cstring>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <algorithm>
-#include <cctype>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <fstream>
-#include <vector>
-#include <ifaddrs.h>
-#include <functional>
-
-using namespace std;
+#include "../common/ChatAppClient/library.h"
+#include "authentication.h"
 
 const int PORT = 55000;
 
@@ -74,15 +59,6 @@ class Server{
         bool becomeServer(int port,string clientName); 
 
         void handleP2PMessages(int clientSock,string clientName);
-};
-
-class Authen {
-
-public:
-    void handleUserInteraction(int clientSocket);
-
-    void enterCredential(int clientSocket);
-
 };
 
 class SharingFile{

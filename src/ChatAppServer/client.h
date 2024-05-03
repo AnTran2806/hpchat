@@ -1,7 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "../common/library.h"
+#include "../common/ChatAppServer/library.h"
 
 class Client {
 public:
