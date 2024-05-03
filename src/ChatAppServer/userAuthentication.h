@@ -1,7 +1,7 @@
 #ifndef USERAUTHENTICATION_H
 #define USERAUTHENTICATION_H
 
-#include "../common/library.h"
+#include "../common/ChatAppServer/library.h"
 
 class Server;
 

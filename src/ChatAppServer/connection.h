@@ -1,7 +1,7 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include "../common/library.h"
+#include "../common/ChatAppServer/library.h"
 #include "server.h"
 #include "userAuthentication.h"
 

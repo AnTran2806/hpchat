@@ -1,6 +1,17 @@
-#include "client.h"
+#include "authentication.h"
 
-void Authen::handleUserInteraction(int clientSocket) {
+void Authentication::enterCredential(int clientSocket){
+    string username,password;
+    cout << "\033[1mEnter Username:\033[0m ";
+    getline(cin,username);
+    sendToServer(clientSocket,username);
+    cout << "\033[1mEnter Password:\033[0m ";
+    getline(cin,password);
+    sendToServer(clientSocket,password);
+    cout << endl;
+}
+
+void Authentication::handleUserInteraction(int clientSocket) {
     string option;
 
     cout << "\t\033[1;34mWelcome to Chat Application!\033[0m" << endl;
@@ -25,7 +36,7 @@ void Authen::handleUserInteraction(int clientSocket) {
     } while (!validOption);
 
 // After having a valid selection, send it to the server and process it
-    sendToServer(clientSocket,option);
+    sendToServer(clientSocket, option);
 
     bool success = false;
     do {
