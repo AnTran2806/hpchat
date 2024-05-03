@@ -1,6 +1,6 @@
-#include "server.h"
+#include "chatService.h"
 
-void Server::handleGroupMessage(const string &clientName,  int clientSocket)
+void ChatService::handleGroupMessage(const string &clientName,  int clientSocket)
 {
    
     char buffer[4096];

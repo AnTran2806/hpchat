@@ -1,9 +1,9 @@
-#include "server.h"
+#include "chatService.h"
 #include "connection.h"
 
 int main() {
-    Server server;
-    UserAuthentication auth(&server);
+    ChatService chatService;
+    UserAuthentication auth(&chatService);
     Connection connection(auth);
     connection.start(PORT);
     return 0;

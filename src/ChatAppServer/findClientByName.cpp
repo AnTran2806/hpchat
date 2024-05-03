@@ -1,6 +1,6 @@
-#include "server.h"
+#include "chatService.h"
 
-Client* Server::findClientByName(const string& name) {
+Client* ChatService::findClientByName(const string& name) {
     // ... (findClientByName implementation)
     lock_guard<mutex> guard(clientsMutex);
     auto it = find_if(clients.begin(), clients.end(), [this,name](const Client& client) {

@@ -1,6 +1,6 @@
-#include "server.h"
+#include "chatService.h"
 
-void Server::sendPrivateMessage(const string &senderName, const string &receiverName, const string &message)
+void ChatService::sendPrivateMessage(const string &senderName, const string &receiverName, const string &message)
 {
     // Lock the clientsMutex to ensure thread safety
     lock_guard<mutex> guard(clientsMutex);

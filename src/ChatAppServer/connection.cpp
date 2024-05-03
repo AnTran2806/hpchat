@@ -1,5 +1,5 @@
 #include "connection.h"
-#include "server.h"
+#include "chatService.h"
 #include "userAuthentication.h"
 
 // Connection::Connection(class Server& server) : server(server) {}

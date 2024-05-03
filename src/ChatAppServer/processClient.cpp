@@ -1,6 +1,6 @@
-#include "server.h"
+#include "chatService.h"
 
-void Server::processClient(int clientSocket)
+void ChatService::processClient(int clientSocket)
 {
     string roomName = receiveString(clientSocket);
     if (roomName.empty()) {
@@ -21,6 +21,6 @@ void Server::processClient(int clientSocket)
     lock_guard<mutex> guard(clientsMutex);
     clients.push_back(Client(clientSocket, clientName, roomName)); // Pass the username
     
-    thread clientThread(&Server::handleClient, this, clientSocket, clientName, roomName); // Pass the username
+    thread clientThread(&ChatService::handleClient, this, clientSocket, clientName, roomName); // Pass the username
     clientThread.detach();
 }

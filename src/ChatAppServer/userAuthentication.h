@@ -6,17 +6,17 @@
 // using namespace std;
 #include "../common/library.h"
 
-class Server;
+class ChatService;
 
 class UserAuthentication {
 private:
-    Server* server;
+    ChatService* chatService;
     string username;
     string password;
 
 public:
     UserAuthentication();  
-    UserAuthentication(Server* server);
+    UserAuthentication(ChatService* chatService);
 
     unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
 
@@ -34,7 +34,7 @@ public:
 
     bool handleRegistration(int clientSocket);
 
-    bool handleLogin(int clientSocket, Server* server);
+    bool handleLogin(int clientSocket, ChatService* chatService);
 
     bool handleChangePassword(int clientSocket);
 

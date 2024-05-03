@@ -1,6 +1,6 @@
-#include "server.h"
+#include "chatService.h"
 
-UserAuthentication::UserAuthentication(Server* server) : server(server), username(""), password("") {}
+UserAuthentication::UserAuthentication(ChatService* chatService) : chatService(chatService), username(""), password("") {}
 
 bool UserAuthentication::isUserRegistered(const string& checkUsername) 
 {
@@ -182,7 +182,7 @@ void UserAuthentication::handleAuthentication(int clientSocket, const string& op
         {
             // Login
             //cout<<"Client has logged in."<<endl;
-            check = handleLogin(clientSocket, server);
+            check = handleLogin(clientSocket, chatService);
         }
         else if (option == "C")
         {
@@ -201,7 +201,7 @@ void UserAuthentication::handleAuthentication(int clientSocket, const string& op
     }
 
     // Detach the thread before proceeding
-    thread processThread(&Server::processClient, server, clientSocket);
+    thread processThread(&ChatService::processClient, chatService, clientSocket);
     processThread.join();
 }    
 
@@ -223,7 +223,7 @@ bool UserAuthentication::handleRegistration(int clientSocket)
     {
         response = "Registration successful. Please log in with your new credentials.";
         send(clientSocket, response, strlen(response), 0);
-        handleLogin(clientSocket, server);
+        handleLogin(clientSocket, chatService);
     }
     else
     {
@@ -235,7 +235,7 @@ bool UserAuthentication::handleRegistration(int clientSocket)
     return status;
 }
 
-bool UserAuthentication::handleLogin(int clientSocket, class Server* server)
+bool UserAuthentication::handleLogin(int clientSocket, class ChatService* chatService)
 {
     sockaddr_in clientAddr;
     socklen_t addrLen = sizeof(clientAddr);
@@ -266,14 +266,14 @@ bool UserAuthentication::handleLogin(int clientSocket, class Server* server)
 
     // After confirming successful login, save the username to the list
     loggedInUsers[clientSocket] = username;
-    server->setLoggedInUsers(loggedInUsers);
+    chatService->setLoggedInUsers(loggedInUsers);
 
     return status;
 }
 
 bool UserAuthentication::handleChangePassword(int clientSocket)
 {
-    if (!handleLogin(clientSocket, server))
+    if (!handleLogin(clientSocket, chatService))
     {
         // If handleLogin fails, send a message to the client
         return false;
@@ -309,7 +309,7 @@ bool UserAuthentication::handleChangePassword(int clientSocket)
 
 bool UserAuthentication::handleDeleteAccount(int clientSocket)
 {
-    if (!handleLogin(clientSocket, server))
+    if (!handleLogin(clientSocket, chatService))
     {
         // If handleLogin fails, send a message to the client
         return false;

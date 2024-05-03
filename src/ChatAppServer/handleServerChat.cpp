@@ -1,6 +1,6 @@
-#include "server.h"
+#include "chatService.h"
 
-void Server::handleServerChat(int clientSocket, const string &clientName)
+void ChatService::handleServerChat(int clientSocket, const string &clientName)
 {
     // Display a message indicating that the client wants to chat with the server
     string clientNameMessage = "\033[1;34m" + clientName + "\033[0m";

@@ -1,5 +1,5 @@
-#ifndef SERVER_H
-#define SERVER_H
+#ifndef CHATSERVICE_H
+#define CHATSERVICE_H
 
 #include "../common/library.h"
 #include "userAuthentication.h"
@@ -11,9 +11,9 @@ const int PORT = 55000;
 const int BUFFER_SIZE = 1024;
 const int MAX_CLIENTS = 10;
 
-class Server {
+class ChatService {
 public:
-    Server();
+    ChatService();
 
     Client* findClientByName(const string& name);
 
@@ -48,4 +48,4 @@ private:
     vector<pair<int,string>> checkRoomIDs;
 };
 
-#endif // SERVER_H
+#endif // CHATSERVICE_H

@@ -1,6 +1,6 @@
-#include "server.h"
+#include "chatService.h"
 
-void Server::handleFileTransfer(int clientSocket,string clientName,string roomID) {
+void ChatService::handleFileTransfer(int clientSocket,string clientName,string roomID) {
     
     
     string abc = clientName;

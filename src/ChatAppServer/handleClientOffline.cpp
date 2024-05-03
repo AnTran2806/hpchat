@@ -1,6 +1,6 @@
-#include "server.h"
+#include "chatService.h"
 
-void Server::handleClientOffline(int clientSocket, const string &clientName)
+void ChatService::handleClientOffline(int clientSocket, const string &clientName)
 {
     cerr << "Client " << clientName << " offline!" << endl;
 

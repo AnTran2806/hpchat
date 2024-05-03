@@ -1,6 +1,6 @@
-#include "server.h"
+#include "chatService.h"
 
-void Server::handleClient(int clientSocket, const string& clientName, const string& roomName) 
+void ChatService::handleClient(int clientSocket, const string& clientName, const string& roomName) 
 {
     char buffer[4096];
     int bytesReceived;

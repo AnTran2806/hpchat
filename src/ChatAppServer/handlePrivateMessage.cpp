@@ -1,6 +1,6 @@
-#include "server.h"
+#include "chatService.h"
 
-void Server::handlePrivateMessage(int clientSocket, const string &clientName, [[maybe_unused]] const string &roomName, string receivedMessage)
+void ChatService::handlePrivateMessage(int clientSocket, const string &clientName, [[maybe_unused]] const string &roomName, string receivedMessage)
 {
     char buffer[4096];
     int bytesReceived;
