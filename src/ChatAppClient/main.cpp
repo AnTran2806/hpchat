@@ -1,14 +1,16 @@
 #include "client.h"
 #include "authentication.h"
+#include "connection.h"
 
 int main() {
     Client client;
     Authentication authentication;
     string IPOFSERVER; 
+    Connection connection(client);
     while (true) {
         cout << "IP server: ";
         getline(cin, IPOFSERVER);
-        if (client.connectToServer(IPOFSERVER, PORT)) {
+        if (connection.connectToServer(IPOFSERVER, PORT)) {
             authentication.handleUserInteraction(client.getSocket());
             client.startReceiving(client.getSocket());
             sendToServer(client.getSocket(),"R1");

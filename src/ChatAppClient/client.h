@@ -4,6 +4,7 @@
 #include "../common/ChatAppClient/library.h"
 #include "authentication.h"
 #include "server.h"
+#include "connection.h" 
 
 const int PORT = 55000;
 
@@ -16,6 +17,7 @@ private:
     Server* server;
     int clientSocket;
     thread receivingThread;
+    Connection connection; 
     
 public:
     Client(Server* server);
@@ -38,8 +40,6 @@ public:
     void receiveFile(int clientSocket);
 
     void startReceiving(int clientSocket);
-
-    bool connectToServer(const string& ipAddress, int port);
 };
 
 #endif // CLIENT_H
