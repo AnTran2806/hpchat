@@ -1,10 +1,10 @@
 #include "client.h"
 
 void Server::stopServer() {
-    close(AserverSock);
-    close(AclientSock);
+    close(serverSock);
+    close(clientSock);
 
-    if (AserverThread.joinable()) {
-         AserverThread.join();
+    if (serverThread.joinable()) {
+        serverThread.join();
     }   
 }

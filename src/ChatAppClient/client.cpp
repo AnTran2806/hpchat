@@ -1,6 +1,6 @@
 #include "client.h"
 
-Client::Client(int sock):sock(sock){}
+Client::Client(int clientSocket):clientSocket(clientSocket){}
 
 Client::~Client(){
     if (receivingThread.joinable()) {
@@ -9,7 +9,7 @@ Client::~Client(){
 }
 
 int Client::getSocket() const {
-    return sock;
+    return clientSocket;
 }
 
 void Client::stopClient(int clientSocket){
@@ -18,8 +18,8 @@ void Client::stopClient(int clientSocket){
 
 
 Client::Client() {
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1) {
+    clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (clientSocket == -1) {
         cerr << "Error: Create the socket" << endl;
         return;
     }

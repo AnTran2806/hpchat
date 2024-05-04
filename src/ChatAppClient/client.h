@@ -8,16 +8,20 @@ const int PORT = 55000;
 
 void sendToServer(int socket,const string& message);
 
+class Server;
+
 class Client {
 private:
-    int sock;
+    Server* server;
+    int clientSocket;
     thread receivingThread;
     
 public:
-    Client();
+    Client(Server* server);
 
     explicit Client(int socket);
 
+    Client();
     ~Client();
 
     int getSocket() const;
@@ -38,19 +42,19 @@ public:
 };
 
 class Server{
-    public:
-        int AserverSock;
-        int AclientSock;
-        thread AserverThread; 
+public:
+    int serverSock;
+    int clientSock;
+    thread serverThread; 
 
-        ~Server(){
-            stopServer();
-        }
-        void stopServer() ;
+    ~Server(){
+        stopServer();
+    }
+    void stopServer() ;
 
-        bool becomeServer(int port,string clientName); 
+    bool becomeServer(int port,string clientName); 
 
-        void handleP2PMessages(int clientSock,string clientName);
+    void handleP2PMessages(int clientSock,string clientName);
 };
 
 #endif // CLIENT_H
