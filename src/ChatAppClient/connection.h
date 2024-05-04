@@ -1,15 +1,12 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include <string>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+#include "../common/ChatAppClient/library.h"
 
 class Connection {
 public:
     Connection(class Client& client);
-    bool connectToServer(const std::string& ipAddress, int port);
+    bool connectToServer(const string& ipAddress, int port);
 
 private:
     int clientSocket;    

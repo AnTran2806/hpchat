@@ -1,5 +1,4 @@
 #include "connection.h"
-#include "../common/ChatAppClient/library.h"
 #include "client.h"
 
 Connection::Connection(class Client& client) : client(client) {}
