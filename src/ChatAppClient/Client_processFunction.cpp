@@ -51,7 +51,7 @@ void Client::processFunction() {
                 cout << "Enter the new IP_Server: ";
                 string IP_SErver;
                 getline(cin, IP_SErver);
-                connectToServer(IP_SErver, 54001);
+                connection.connectToServer(IP_SErver, 54001);
                 startReceiving(getSocket());
                 cout << "\n\t\t\tWelcome to the Private chat\n";
                 while (true) {
