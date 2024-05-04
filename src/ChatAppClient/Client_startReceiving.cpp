@@ -5,16 +5,16 @@ void Client::startReceiving(int clientSocket) {
     receivingThread = thread([this,clientSocket]() {
         char buffer[4096]; 
         while (true) {
-            int bytesReceived = recv(sock, buffer, 4096, 0);
+            int bytesReceived = recv(clientSocket, buffer, 4096, 0);
             if (bytesReceived <= 0) {
                 cerr << "Error: Server is down" << endl;
-                close(sock);
+                close(clientSocket);
                 break;
             }
             // Check if the received message indicates a file is being sent
             if (strcmp(buffer, "sendfile") == 0) {
                 cout<<"Receiving a file from another client!";
-                receiveFile(sock);
+                receiveFile(clientSocket);
             }
             else if (strcmp(buffer, "out") == 0) {
                 string message = "Bye!";

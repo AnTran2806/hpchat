@@ -1,8 +1,8 @@
 #include "client.h"
 
 bool Server::becomeServer(int port, string clientName) {
-    AserverSock = socket(AF_INET, SOCK_STREAM, 0);
-    if (AserverSock == -1) {
+    serverSock = socket(AF_INET, SOCK_STREAM, 0);
+    if (serverSock == -1) {
         cerr << "Error: Create the server socket" << endl;
         return false;
     }
@@ -12,29 +12,29 @@ bool Server::becomeServer(int port, string clientName) {
     hint.sin_port = htons(port);
     hint.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(AserverSock, (sockaddr*)&hint, sizeof(hint)) == -1) {
+    if (bind(serverSock, (sockaddr*)&hint, sizeof(hint)) == -1) {
         cerr << "Error: Cannot bind to port" << endl;
-        close(AserverSock);
+        close(serverSock);
         return false;
     }
 
-    if (listen(AserverSock, SOMAXCONN) == -1) {
+    if (listen(serverSock, SOMAXCONN) == -1) {
         cerr << "Error: Cannot listen on port" << endl;
-        close(AserverSock);
+        close(serverSock);
         return false;
     }
     
-    AserverThread = thread([this, port, clientName]() {
+    serverThread = thread([this, port, clientName]() {
         sockaddr_in clientAddr;
         socklen_t clientSize = sizeof(clientAddr);
-        AclientSock = accept(AserverSock, (sockaddr*)&clientAddr, &clientSize);
-        if (AclientSock == -1) {
+        clientSock = accept(serverSock, (sockaddr*)&clientAddr, &clientSize);
+        if (clientSock == -1) {
             cerr << "Error: Cannot accept client connection" << endl;
             return;
         }
         cout <<clientName<< " accepted your request and connected on port  " << port << endl;
 
-        handleP2PMessages(AclientSock, clientName);
+        handleP2PMessages(clientSock, clientName);
     });
 
     return true;

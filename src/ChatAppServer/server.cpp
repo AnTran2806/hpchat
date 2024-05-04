@@ -79,7 +79,7 @@ void Server::handleClient(int clientSocket, const string& clientName, const stri
         }
         else if (receivedMessage.substr(0,3)=="P2P"){
             string p2pName = receivedMessage.substr(4);
-            cout<<"Reeceived the request to chat P2P from "<<clientName <<" to "<<p2pName<<endl;
+            cout<<"Received the request to chat P2P from "<<clientName <<" to "<<p2pName<<endl;
             bytesReceived =recv(clientSocket,buffer,4096,0);
             string IPClient1(buffer,0,bytesReceived);
            string clientNameAndIP = "\033[1;34m" + clientName + " wants to chat with you. IP: " + IPClient1 + "\033[0m\nPlease reply with 'Y' to accept or 'N' to wait:   ";
