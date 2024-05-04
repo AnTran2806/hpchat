@@ -12,40 +12,32 @@ class Client {
 private:
     int sock;
     thread receivingThread;
-
     
 public:
     Client();
 
-    Client(int sock):sock(sock){};
+    explicit Client(int socket);
 
-    ~Client(){
-        if (receivingThread.joinable()) {
-            receivingThread.join();
-        }
-    }
+    ~Client();
 
-    int getSocket() const {
-        return sock;
-    }
-
-    void stopClient(int clientSocket){
-        close (clientSocket);
-    }
-    
-    bool connectToServer(const string& ipAddress, int port);
-
-    void startReceiving(int clientSocket);
-
-    void processFunction();
+    int getSocket() const;
 
     string getIPAddress();
 
+    void processFunction();
 
+    void sendFile(int clientSocket);
+
+    void stopClient(int clientSocket);
+
+    void receiveFile(int clientSocket);
+
+    void startReceiving(int clientSocket);
+
+    bool connectToServer(const string& ipAddress, int port);
 };
 
 class Server{
-          
     public:
         int AserverSock;
         int AclientSock;
@@ -61,11 +53,4 @@ class Server{
         void handleP2PMessages(int clientSock,string clientName);
 };
 
-class SharingFile{
-public:
-    void sendFile(int clientSocket);
-
-    void receiveFile(int clientSocket);
-
-};
 #endif // CLIENT_H

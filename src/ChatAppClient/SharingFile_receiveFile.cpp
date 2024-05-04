@@ -1,6 +1,6 @@
 #include "client.h"
 
-void SharingFile::receiveFile(int clientSocket) {
+void Client::receiveFile(int clientSocket) {
         char filename[256];
         read(clientSocket, filename, sizeof(filename));
         cout << "File Name: " << filename << endl;

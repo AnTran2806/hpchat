@@ -1,5 +1,22 @@
 #include "client.h"
 
+Client::Client(int sock):sock(sock){}
+
+Client::~Client(){
+    if (receivingThread.joinable()) {
+        receivingThread.join();
+    }
+}
+
+int Client::getSocket() const {
+    return sock;
+}
+
+void Client::stopClient(int clientSocket){
+    close(clientSocket);
+}
+
+
 Client::Client() {
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1) {

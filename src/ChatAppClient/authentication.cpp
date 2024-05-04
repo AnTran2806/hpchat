@@ -20,7 +20,7 @@ void Authentication::handleUserInteraction(int clientSocket) {
     cout << "\033[1;34mC:\033[0m";cout<<"Change The Password" << endl;
     cout << "\033[1;34mD:\033[0m";cout<<"Delete Your Account" << endl;
 
-// Use a loop to ask the user to re-enter if the selection is invalid
+    // Use a loop to ask the user to re-enter if the selection is invalid
     bool validOption = false;
     do {
         cout << "\033[1mYour Choice:\033[0m ";
@@ -35,7 +35,7 @@ void Authentication::handleUserInteraction(int clientSocket) {
         }
     } while (!validOption);
 
-// After having a valid selection, send it to the server and process it
+    // After having a valid selection, send it to the server and process it
     sendToServer(clientSocket, option);
 
     bool success = false;
@@ -100,7 +100,7 @@ void Authentication::handleUserInteraction(int clientSocket) {
 
                 success = true;
             }
-        }else if (option == "D") {
+        } else if (option == "D") {
             cout << "\t\033[3mSign In\033[0m" << endl;
             enterCredential(clientSocket);
             char buffer[1024] = {0};

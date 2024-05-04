@@ -1,6 +1,6 @@
 #include "client.h"
 
-void SharingFile::sendFile(int clientSocket) {
+void Client::sendFile(int clientSocket) {
 
         string filePath;
             cout << "Enter the file path to send: ";
