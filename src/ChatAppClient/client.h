@@ -3,6 +3,7 @@
 
 #include "../common/ChatAppClient/library.h"
 #include "authentication.h"
+#include "server.h"
 
 const int PORT = 55000;
 
@@ -39,22 +40,6 @@ public:
     void startReceiving(int clientSocket);
 
     bool connectToServer(const string& ipAddress, int port);
-};
-
-class Server{
-public:
-    int serverSock;
-    int clientSock;
-    thread serverThread; 
-
-    ~Server(){
-        stopServer();
-    }
-    void stopServer() ;
-
-    bool becomeServer(int port,string clientName); 
-
-    void handleP2PMessages(int clientSock,string clientName);
 };
 
 #endif // CLIENT_H
