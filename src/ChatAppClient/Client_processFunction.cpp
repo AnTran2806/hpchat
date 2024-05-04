@@ -2,8 +2,6 @@
 
 void Client::processFunction() {
     string ipAddress = getIPAddress();
-    SharingFile sharingFile1;
-
     cout << "\t\t\tWelcome!\n";
 
     while (true) {
@@ -13,7 +11,7 @@ void Client::processFunction() {
 
         if (userInput == "sendfile") {
             sendToServer(sock, "sendfile");
-            sharingFile1.sendFile(sock);
+            sendFile(sock);
         }
         else if (userInput == "P2P") {
             string infP2P = "P2P ";
@@ -40,7 +38,7 @@ void Client::processFunction() {
                 }
                 else if(inPutServer=="sendfile") {
                     sendToServer(server1.AclientSock, "sendfile");
-                    sharingFile1.sendFile(server1.AclientSock);
+                    sendFile(server1.AclientSock);
                 }else {
                     sendToServer(server1.AclientSock, inPutServer);
                 }
@@ -70,7 +68,7 @@ void Client::processFunction() {
                     }
                     else if (IPUT == "sendfile"){
                         sendToServer(client1.getSocket(), "sendfile");
-                        sharingFile1.sendFile(client1.getSocket());
+                        sendFile(client1.getSocket());
                     }
                     else {
                         sendToServer(client1.getSocket(), IPUT);

@@ -1,7 +1,7 @@
 #include "client.h"
 
 void Server::handleP2PMessages(int clientSock,string clientName) {
-    SharingFile sharingFile;
+    Client client;
     char buffer[4096];
     while (true) {
         int bytesReceived = recv(clientSock, buffer, 4096, 0);
@@ -19,7 +19,7 @@ void Server::handleP2PMessages(int clientSock,string clientName) {
         }
         if (strcmp(buffer, "sendfile") == 0) {
                 cout<<"Receiving a file from another client!";
-                sharingFile.receiveFile(clientSock);
+                client.receiveFile(clientSock);
             }
         cout << clientName <<":" << string(buffer, bytesReceived) << endl;
     }
