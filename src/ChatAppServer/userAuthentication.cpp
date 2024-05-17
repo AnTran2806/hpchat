@@ -1,4 +1,5 @@
 #include "server.h"
+#include "../common/ChatAppServer/credentialReceiver.cpp"
 
 UserAuthentication::UserAuthentication(Server* server) : server(server), username(""), password("") {}
 
@@ -197,18 +198,13 @@ void UserAuthentication::handleAuthentication(int clientSocket, const string& op
     // Detach the thread before proceeding
     thread processThread(&Server::processClient, server, clientSocket);
     processThread.join();
-}    
+}
 
 bool UserAuthentication::handleRegistration(int clientSocket)
 {
-    char usernameBuffer[1024] = {0};
-    char passwordBuffer[1024] = {0};
-
-    recv(clientSocket, usernameBuffer, sizeof(usernameBuffer), 0);
-    recv(clientSocket, passwordBuffer, sizeof(passwordBuffer), 0);
-
-    string username(usernameBuffer);
-    string password(passwordBuffer);
+    string username, password;
+    CredentialReceiver credentialReceiver;
+    credentialReceiver.receiveCredential(clientSocket, username, password);
 
     bool status = isUserRegistered(username);
     status = !status && registerUser(username, password);
@@ -238,14 +234,10 @@ bool UserAuthentication::handleLogin(int clientSocket, class Server* server)
     char clientIP[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
 
-    char usernameBuffer[1024] = {0};
-    char passwordBuffer[1024] = {0};
+    string username, password;
+    CredentialReceiver credentialReceiver;
+    credentialReceiver.receiveCredential(clientSocket, username, password);
 
-    recv(clientSocket, usernameBuffer, sizeof(usernameBuffer), 0);
-    recv(clientSocket, passwordBuffer, sizeof(passwordBuffer), 0);
-
-    string username(usernameBuffer);
-    string password(passwordBuffer);
     bool status = isLoggedIn(username, password);
 
     const char *response = status ? "Login successful." : "Login failed.\nPlease try again.";
