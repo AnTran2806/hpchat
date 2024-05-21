@@ -78,15 +78,23 @@ void Authentication::handleUserInteraction(int clientSocket) {
                     cout << endl;
                     char oldPassword[1024];
 
-                    cout << "\033[1mEnter Your Old Password:\033[0m ";
+                    cout << "\033[1mOld Password:\033[0m ";
                     cin.getline(oldPassword, sizeof(oldPassword));
                     send(clientSocket, oldPassword, strlen(oldPassword), 0);
-                    
+                    cout << endl;
+
                     char newPassword[1024];
 
-                    cout << "\033[1mEnter New Password:\033[0m ";
+                    cout << "\033[1mCreate New password:\033[0m ";
                     cin.getline(newPassword, sizeof(newPassword));
                     send(clientSocket, newPassword, strlen(newPassword), 0);
+                    cout << endl;
+
+                    char confirmNewPassword[1024];
+
+                    cout << "\033[1mConfirm New Password:\033[0m ";
+                    cin.getline(confirmNewPassword, sizeof(confirmNewPassword));
+                    send(clientSocket, confirmNewPassword, strlen(confirmNewPassword), 0);
                     cout << endl;
 
                     char buffer[1024] = {0};

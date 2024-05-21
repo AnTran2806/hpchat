@@ -29,13 +29,14 @@ public:
 
     bool deleteAccount(const string& enteredUsername, const string& retypePassword);
 
-    bool changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword);
+    bool changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword, const string& confirmNewPassword);
 
 private:
     Server* server;
     string username;
     string password;
     unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
+    unordered_map<int, string> loggedInPasswords;  // Used to store logged in user names
 };
 
 #endif // USERAUTHENTICATION_H

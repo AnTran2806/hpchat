@@ -61,48 +61,56 @@ bool UserAuthentication::isLoggedIn(const string& enteredUsername, const string&
     return false;
 }
 
-bool UserAuthentication::changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword) {
-    string storedUsername, storedPassword;
+bool UserAuthentication::changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword, const string& confirmNewPassword) {
 
-    // Open the input/output file to read and write user data
-    fstream file("data\\users.txt", ios::in | ios::out);
-    if (!file.is_open()) {
+    ifstream inputFile("data\\users.txt");
+    if (!inputFile.is_open()) {
         cerr << "Error: Unable to open file" << endl;
         return false;
     }
 
-    // Flag to check if the password is changed
+    stringstream buffer;
+    buffer << inputFile.rdbuf();
+    inputFile.close();
+
+    string fileContents = buffer.str();
+    stringstream newFileContents;
+    string line;
     bool passwordChanged = false;
 
-    while (getline(file, storedUsername)) {
-        getline(file, storedPassword);
-
-
-        // Check if the current line contains the username and old password
-        if (storedUsername == enteredUsername && storedPassword == oldPassword) {
-            // Check if the new password is different from the old password
-            if (newPassword != oldPassword) {
-                // Update the password directly in the file
-                file.seekp(file.tellg());  // Move the write cursor to the current position
-                file << enteredUsername << endl << newPassword << endl;
-
+    stringstream fileStream(fileContents);
+    while (getline(fileStream, line)) {
+        string storedUsername = line;
+        string storedPassword;
+        if (getline(fileStream, storedPassword)) {
+            if (storedUsername == enteredUsername && storedPassword == oldPassword) {
+                newFileContents << storedUsername << endl << newPassword << endl;
                 passwordChanged = true;
             } else {
-                // cerr << "Error: New password is the same as the old password" << endl;
+                newFileContents << storedUsername << endl << storedPassword << endl;
             }
-
-            break;
         }
     }
 
-    // Close the file
-    file.close();
+    if (newPassword == oldPassword) {
+        cerr << "Error: New password is the same as the old password" << endl;
+        return false;
+    } else if (newPassword != confirmNewPassword) {
+        cerr << "Error: Confirm password does not match the new password" << endl;
+        return false;
+    }
 
     if (passwordChanged) {
-        // cout << "Password changed successfully" << endl;
+        ofstream outputFile("data\\users.txt", ios::trunc);
+        if (!outputFile.is_open()) {
+            cerr << "Error: Unable to open file for writing" << endl;
+            return false;
+        }
+        outputFile << newFileContents.str();
+        outputFile.close();
         return true;
     } else {
-        // cerr << "Error: Username or old password not found" << endl;
+        cerr << "Error: Username or old password not found" << endl;
         return false;
     }
 }
@@ -240,7 +248,7 @@ bool UserAuthentication::handleLogin(int clientSocket, class Server* server)
 
     bool status = isLoggedIn(username, password);
 
-    const char *response = status ? "Login successful." : "Login failed.\nPlease try again.";
+    const char *response = status ? "Login successful." : "Login failed.\nPlease try again.\n";
     if(strcmp(response, "Login successful.") == 0){
         cout <<username << " signed successful at IP address " << "\033[1;32m" << clientIP << "\033[0m"<<endl; 
     } 
@@ -249,6 +257,10 @@ bool UserAuthentication::handleLogin(int clientSocket, class Server* server)
 
     // After confirming successful login, save the username to the list
     loggedInUsers[clientSocket] = username;
+    loggedInPasswords[clientSocket] = password;
+
+    // this->username = username;
+    // this->password = password;
     server->setLoggedInUsers(loggedInUsers);
 
     return status;
@@ -265,23 +277,30 @@ bool UserAuthentication::handleChangePassword(int clientSocket)
     bool passwordChangeSuccess = false;
 
     do {
-        // Read the new password from the client
+        // Read the old password from the client
         char oldPasswordBuffer[1024] = {0};
         recv(clientSocket, oldPasswordBuffer, sizeof(oldPasswordBuffer), 0);
         string oldPassword(oldPasswordBuffer);
 
+        // Read the new password from the client
         char newPasswordBuffer[1024] = {0};
         recv(clientSocket, newPasswordBuffer, sizeof(newPasswordBuffer), 0);
         string newPassword(newPasswordBuffer);
+
+        // Read the confirm new password from the client
+        char confirmNewPasswordBuffer[1024] = {0};
+        recv(clientSocket, confirmNewPasswordBuffer, sizeof(confirmNewPasswordBuffer), 0);
+        string confirmNewPassword(confirmNewPasswordBuffer);
 
         // Get the username of the logged-in user from loggedInUsers map
         string enteredUsername = loggedInUsers[clientSocket];
 
         // Call the changePassword function
-        passwordChangeSuccess = changePassword(enteredUsername, oldPassword, newPassword);
+        passwordChangeSuccess = changePassword(enteredUsername, oldPassword, newPassword, confirmNewPassword);
 
         // Send the response back to the client
-        const char *changePasswordResponse = passwordChangeSuccess ? "\033[1;32mPassword changed successfully.\033[0m" : "\033[1;31mNew password is the same as the old password. Please try again.\033[0m\n";
+        const char *changePasswordResponse = passwordChangeSuccess ? "\033[1;32mPassword changed successfully.\033[0m" : "\033[1;31mNew password is the same as the old password or passwords do not match. Please try again.\033[0m\n";
+        
         send(clientSocket, changePasswordResponse, strlen(changePasswordResponse), 0);
 
     } while (!passwordChangeSuccess);
