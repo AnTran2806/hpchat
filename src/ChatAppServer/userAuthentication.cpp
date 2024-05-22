@@ -1,114 +1,81 @@
 #include "server.h"
 #include "../common/ChatAppServer/credentialReceiver.cpp"
+#include "../common/ChatAppServer/fileManager.cpp"
+#include "../common/ChatAppServer/user.cpp"
+
 
 UserAuthentication::UserAuthentication(Server* server) : server(server), username(""), password("") {}
 
-bool UserAuthentication::isUserRegistered(const string& checkUsername) 
-{
-    // Implementation here
-    ifstream inputFile("data\\users.txt");
-    string username;
-    while (getline(inputFile, username)) {
-        // Check if the current line is the username
-        if (username == checkUsername) {
-            inputFile.close();
-            return true; // User is already registered
-        }
+bool UserAuthentication::isUserRegistered(const string& checkUsername) {
+    vector<User> users;
+    FileManager fileManager; // Create an instance of FileManager
+    if (!fileManager.readUsersFromFile(filePath, users)) {
+        return false;
+    }
 
-        // Skip the next line (password)
-        if (!getline(inputFile, username)) {
-            break;  // Break if unable to read the next line (no password found)
+    for (const auto& user : users) {
+        if (user.username == checkUsername) {
+            return true;
         }
     }
 
-    inputFile.close();
-    return false; // User is not registered
+    return false;
 }
 
 bool UserAuthentication::registerUser(const string& enteredUsername, const string& enteredPassword) {
-    // Implementation here
-    username = enteredUsername;
-    password = enteredPassword;
-
-    // ofstream myFile("data\\" + username + ".txt");
-    ofstream myFile("data\\users.txt", ios::app);  // Open the file to continue writing to the last file
-    if (myFile.is_open()) {
-        myFile << username << endl << password << endl;
-        myFile.close();
-        return true;
-    } else {
-        cerr << "Unable to open file" << endl;
+    FileManager fileManager;
+    if (isUserRegistered(enteredUsername)) {
+        cerr << "Error: Username already exists" << endl;
         return false;
     }
+
+    User newUser(enteredUsername, enteredPassword);
+    return fileManager.appendUserToFile(filePath, newUser);
 }
 
 bool UserAuthentication::isLoggedIn(const string& enteredUsername, const string& enteredPassword) {
-    string storedUsername, storedPassword;
+    vector<User> users;
+    FileManager fileManager;
 
-    // ifstream inputFile("./data/data_users/users.txt");
-    ifstream inputFile("data\\users.txt");
-    if (inputFile.is_open()) {
-        while (getline(inputFile, storedUsername)) {
-            getline(inputFile, storedPassword);
-
-            if (storedUsername == enteredUsername && storedPassword == enteredPassword) {
-                inputFile.close();
-                return true;
-            }
-        }
-        inputFile.close();
+    if (!fileManager.readUsersFromFile(filePath, users)) {
+        return false;
     }
+
+    for (const auto& user : users) {
+        if (user.username == enteredUsername && user.password == enteredPassword) {
+            return true;
+        }
+    }
+
     return false;
 }
 
 bool UserAuthentication::changePassword(const string& enteredUsername, const string& oldPassword, const string& newPassword, const string& confirmNewPassword) {
-
-    ifstream inputFile("data\\users.txt");
-    if (!inputFile.is_open()) {
-        cerr << "Error: Unable to open file" << endl;
-        return false;
-    }
-
-    stringstream buffer;
-    buffer << inputFile.rdbuf();
-    inputFile.close();
-
-    string fileContents = buffer.str();
-    stringstream newFileContents;
-    string line;
-    bool passwordChanged = false;
-
-    stringstream fileStream(fileContents);
-    while (getline(fileStream, line)) {
-        string storedUsername = line;
-        string storedPassword;
-        if (getline(fileStream, storedPassword)) {
-            if (storedUsername == enteredUsername && storedPassword == oldPassword) {
-                newFileContents << storedUsername << endl << newPassword << endl;
-                passwordChanged = true;
-            } else {
-                newFileContents << storedUsername << endl << storedPassword << endl;
-            }
-        }
-    }
-
-    if (newPassword == oldPassword) {
-        cerr << "Error: New password is the same as the old password" << endl;
-        return false;
-    } else if (newPassword != confirmNewPassword) {
+    FileManager fileManager;
+    if (newPassword != confirmNewPassword) {
         cerr << "Error: Confirm password does not match the new password" << endl;
         return false;
     }
 
-    if (passwordChanged) {
-        ofstream outputFile("data\\users.txt", ios::trunc);
-        if (!outputFile.is_open()) {
-            cerr << "Error: Unable to open file for writing" << endl;
-            return false;
+    vector<User> users;
+    if (!fileManager.readUsersFromFile(filePath, users)) {
+        return false;
+    }
+
+    bool passwordChanged = false;
+    for (auto& user : users) {
+        if (user.username == enteredUsername && user.password == oldPassword) {
+            if (newPassword == oldPassword) {
+                cerr << "Error: New password is the same as the old password" << endl;
+                return false;
+            }
+            user.password = newPassword;
+            passwordChanged = true;
         }
-        outputFile << newFileContents.str();
-        outputFile.close();
-        return true;
+    }
+
+    if (passwordChanged) {
+        return fileManager.writeUsersToFile(filePath, users);
     } else {
         cerr << "Error: Username or old password not found" << endl;
         return false;
@@ -116,66 +83,26 @@ bool UserAuthentication::changePassword(const string& enteredUsername, const str
 }
 
 bool UserAuthentication::deleteAccount(const string& enteredUsername, const string& retypePassword) {
-    string storedUsername, storedPassword;
-
-    // Open the input/output file to read and write user data
-    fstream file("data\\users.txt", ios::in | ios::out);
-    if (!file.is_open()) {
-        cerr << "Error: Unable to open file" << endl;
+    vector<User> users;
+    FileManager fileManager;
+    if (!fileManager.readUsersFromFile(filePath, users)) {
         return false;
     }
 
-    // Get the current position in the file for later seeking
-    streampos currentPosition = file.tellg();
+    auto it = remove_if(users.begin(), users.end(), [&](const User& user) {
+        return user.username == enteredUsername && user.password == retypePassword;
+    });
 
-    // Flag to check if the account is deleted
-    bool accountDeleted = false;
-
-    // Create a stringstream to store the contents of the file
-    stringstream updatedContents;
-
-    while (getline(file, storedUsername)) {
-        getline(file, storedPassword);
-
-        // Check if the current line contains the username to be deleted
-        if (storedUsername == enteredUsername && storedPassword == retypePassword) {
-            accountDeleted = true;
-        } else {
-            // Write data to the stringstream for all other usernames
-            updatedContents << storedUsername << endl << storedPassword << endl;
-        }
-
-        // Check for the end of the file
-        if (file.eof()) {
-            break;
-        }
-    }
-
-    // Clear the end-of-file flag and seek back to the beginning of the file
-    file.clear();
-    file.seekg(currentPosition);
-
-    // Truncate the file
-    file.close();
-    file.open("data\\users.txt", ios::out | ios::trunc);
-
-    // Write the updated contents to the file
-    file << updatedContents.str();
-
-    // Close the file
-    file.close();
-
-    if (accountDeleted) {
-        cout << "Account deleted successfully" << endl;
-        return true;
+    if (it != users.end()) {
+        users.erase(it, users.end());
+        return fileManager.writeUsersToFile(filePath, users);
     } else {
         cerr << "Error: Username or password not found" << endl;
         return false;
     }
 }
 
-void UserAuthentication::handleAuthentication(int clientSocket, const string& option)
-{
+void UserAuthentication::handleAuthentication(int clientSocket, const string& option) {
     bool check = false;
     string username;
     while(!check)
@@ -208,8 +135,7 @@ void UserAuthentication::handleAuthentication(int clientSocket, const string& op
     processThread.join();
 }
 
-bool UserAuthentication::handleRegistration(int clientSocket)
-{
+bool UserAuthentication::handleRegistration(int clientSocket) {
     string username, password;
     CredentialReceiver credentialReceiver;
     credentialReceiver.receiveCredential(clientSocket, username, password);
@@ -219,7 +145,7 @@ bool UserAuthentication::handleRegistration(int clientSocket)
     const char *response;
     if (status)
     {
-        response = "Registration successful. Please log in with your new credentials.";
+        response = "Registration successful. Please log in with your new credentials.\n";
         send(clientSocket, response, strlen(response), 0);
         handleLogin(clientSocket, server);
     }
@@ -233,8 +159,7 @@ bool UserAuthentication::handleRegistration(int clientSocket)
     return status;
 }
 
-bool UserAuthentication::handleLogin(int clientSocket, class Server* server)
-{
+bool UserAuthentication::handleLogin(int clientSocket, class Server* server) {
     sockaddr_in clientAddr;
     socklen_t addrLen = sizeof(clientAddr);
     getpeername(clientSocket, (struct sockaddr*)&clientAddr, &addrLen);
@@ -266,8 +191,7 @@ bool UserAuthentication::handleLogin(int clientSocket, class Server* server)
     return status;
 }
 
-bool UserAuthentication::handleChangePassword(int clientSocket)
-{
+bool UserAuthentication::handleChangePassword(int clientSocket) {
     if (!handleLogin(clientSocket, server))
     {
         // If handleLogin fails, send a message to the client
@@ -308,8 +232,7 @@ bool UserAuthentication::handleChangePassword(int clientSocket)
     return passwordChangeSuccess;
 }
 
-bool UserAuthentication::handleDeleteAccount(int clientSocket)
-{
+bool UserAuthentication::handleDeleteAccount(int clientSocket) {
     if (!handleLogin(clientSocket, server))
     {
         // If handleLogin fails, send a message to the client

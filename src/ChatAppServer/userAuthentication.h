@@ -37,6 +37,7 @@ private:
     string password;
     unordered_map<int, string> loggedInUsers;  // Used to store logged in user names
     unordered_map<int, string> loggedInPasswords;  // Used to store logged in user names
+    const string filePath = "data\\users.txt";
 };
 
 #endif // USERAUTHENTICATION_H
