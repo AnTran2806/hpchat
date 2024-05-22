@@ -49,7 +49,7 @@ void Authentication::handleUserInteraction(int clientSocket) {
                 read(clientSocket, buffer, 1024);
                 cout << buffer << endl;
 
-                if (strcmp(buffer, "Registration successful. Please log in with your new credentials.") == 0) {
+                if (strcmp(buffer, "Registration successful. Please log in with your new credentials.\n") == 0) {
                     registrationSuccess = true;
                     option = "B"; // Set option to "B" for login
                 } 
