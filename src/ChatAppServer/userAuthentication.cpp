@@ -1,8 +1,7 @@
 #include "server.h"
-#include "../common/ChatAppServer/credentialReceiver.cpp"
+#include "../common/ChatAppServer/credentialHandler.cpp"
 #include "../common/ChatAppServer/fileManager.cpp"
 #include "../common/ChatAppServer/user.cpp"
-
 
 UserAuthentication::UserAuthentication(Server* server) : server(server), username(""), password("") {}
 
@@ -137,8 +136,8 @@ void UserAuthentication::handleAuthentication(int clientSocket, const string& op
 
 bool UserAuthentication::handleRegistration(int clientSocket) {
     string username, password;
-    CredentialReceiver credentialReceiver;
-    credentialReceiver.receiveCredential(clientSocket, username, password);
+    CredentialHandler credentialHandler;
+    credentialHandler.receiveCredential(clientSocket, username, password);
 
     bool status = isUserRegistered(username);
     status = !status && registerUser(username, password);
@@ -146,16 +145,16 @@ bool UserAuthentication::handleRegistration(int clientSocket) {
     if (status)
     {
         response = "Registration successful. Please log in with your new credentials.\n";
-        send(clientSocket, response, strlen(response), 0);
+        credentialHandler.sendResponse(clientSocket, response);
         handleLogin(clientSocket, server);
     }
     else
     {
-        response = "Username already exists. Choose a different username.\nPlease try again.";
-        send(clientSocket, response, strlen(response), 0);
+        response = "Username already exists. Choose a different username.\nPlease try again.\n";
+        credentialHandler.sendResponse(clientSocket, response);
 
     }
-    // send(clientSocket, response, strlen(response), 0);
+    // credentialHandler.sendResponse(clientSocket, response);
     return status;
 }
 
@@ -168,8 +167,8 @@ bool UserAuthentication::handleLogin(int clientSocket, class Server* server) {
     inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
 
     string username, password;
-    CredentialReceiver credentialReceiver;
-    credentialReceiver.receiveCredential(clientSocket, username, password);
+    CredentialHandler credentialHandler;
+    credentialHandler.receiveCredential(clientSocket, username, password);
 
     bool status = isLoggedIn(username, password);
 
@@ -178,14 +177,11 @@ bool UserAuthentication::handleLogin(int clientSocket, class Server* server) {
         cout <<username << " signed successful at IP address " << "\033[1;32m" << clientIP << "\033[0m"<<endl; 
     } 
 
-    send(clientSocket, response, strlen(response), 0);  
+    credentialHandler.sendResponse(clientSocket, response);  
 
     // After confirming successful login, save the username to the list
     loggedInUsers[clientSocket] = username;
     loggedInPasswords[clientSocket] = password;
-
-    // this->username = username;
-    // this->password = password;
     server->setLoggedInUsers(loggedInUsers);
 
     return status;
