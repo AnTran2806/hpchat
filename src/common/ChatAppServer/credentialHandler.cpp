@@ -1,6 +1,6 @@
-#include "credentialReceiver.h"
+#include "credentialHandler.h"
 
-void CredentialReceiver::receiveCredential(int clientSocket, string& username, string& password) {
+void CredentialHandler::receiveCredential(int clientSocket, string& username, string& password) {
     char usernameBuffer[1024] = {0};
     char passwordBuffer[1024] = {0};
 
@@ -9,4 +9,8 @@ void CredentialReceiver::receiveCredential(int clientSocket, string& username, s
 
     username = string(usernameBuffer);
     password = string(passwordBuffer);
+}
+
+void CredentialHandler::sendResponse(int clientSocket, const string &response) {
+    send(clientSocket, response.c_str(), response.length(), 0);
 }
